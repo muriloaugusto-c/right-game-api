@@ -10,21 +10,19 @@ export default class extends BaseSchema {
       table.string('text').notNullable()
 
       // RELACIONAMENTO ENTRE A TABELA USERS
-      table.integer('user_id').unsigned().references('users.id')
+      table.integer('user_id').notNullable().unsigned().references('users.id')
 
-      // RELACIONAMENTO ENTRE A TABELA SPORTSCENTERS
+      // RELACIONAMENTO ENTRE A TABELA SPORTSCOURTS
       table
-        .integer('sports_center_id')
+        .integer('sports_courts_id')
+        .notNullable()
         .unsigned()
-        .references('sports_centers.id')
+        .references('sports_courts.id')
         .onDelete('CASCADE')
 
       // RELACIONAMENTO ENTRE A TABELA RESERVATIONS
-      table.integer('reservations_id').unsigned().references('reservations.id')
+      table.integer('reservations_id').notNullable().unsigned().references('reservations.id')
 
-      /**
-       * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
-       */
       table.timestamp('created_at', { useTz: true })
       table.timestamp('updated_at', { useTz: true })
     })

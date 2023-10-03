@@ -11,10 +11,8 @@ export default class extends BaseSchema {
       table.string('details').notNullable()
 
       // RELACIONAMENTO ENTRE A TABELA USERS
-      table.integer('user_id').unsigned().references('users.id')
-      /**
-       * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
-       */
+      table.integer('user_id').notNullable().unsigned().references('users.id')
+
       table.timestamp('created_at', { useTz: true })
       table.timestamp('updated_at', { useTz: true })
     })

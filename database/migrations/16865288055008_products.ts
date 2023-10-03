@@ -8,16 +8,13 @@ export default class extends BaseSchema {
       table.increments('id').unsigned().primary()
       table.string('name').notNullable()
       table.integer('value').notNullable()
-      table.integer('quantity').notNullable()
+      table.integer('quantity')
       table.string('description').notNullable()
-      table.string('photo_urls').notNullable()
+      table.string('photo_urls')
 
       // RELACIONAMENTO ENTRE A TABELA INVENTORY
-      table.integer('inventory_id').unsigned().references('inventories.id')
+      table.integer('inventory_id').notNullable().unsigned().references('inventories.id')
 
-      /**
-       * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
-       */
       table.timestamp('created_at', { useTz: true })
       table.timestamp('updated_at', { useTz: true })
     })

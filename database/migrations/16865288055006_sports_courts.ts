@@ -8,19 +8,17 @@ export default class extends BaseSchema {
       table.increments('id').unsigned().primary()
       table.string('modality').notNullable()
       table.string('description').notNullable()
-      table.string('size').notNullable()
-      table.string('photoUrls').notNullable()
+      table.string('size')
+      table.string('photo_urls')
 
       // RELACIONAMENTO ENTRE A TABELA SPORTSCENTER
       table
         .integer('sports_center_id')
+        .notNullable()
         .unsigned()
         .references('sports_centers.id')
         .onDelete('CASCADE')
 
-      /**
-       * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
-       */
       table.timestamp('created_at', { useTz: true })
       table.timestamp('updated_at', { useTz: true })
     })

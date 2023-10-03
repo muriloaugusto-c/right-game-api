@@ -9,26 +9,17 @@ export default class extends BaseSchema {
 
       table.string('name').notNullable()
       table.string('photo_urls').notNullable()
-      table.string('events').notNullable()
+      table.string('events')
       table.string('contact_number').notNullable()
-      table.string('parking').notNullable()
-      table.string('steakhouse').notNullable()
+      table.string('parking')
+      table.string('steakhouse')
 
       // RELACIONAMENTO ENTRE A TABELA USERS
-      table.integer('owner').unsigned().references('users.id').onDelete('CASCADE')
-
-      // RELACIONAMENTO ENTRE A TABELA SPORTSCOURTS
-      //table.integer('sports_court_id').unsigned().references('sports_courts.id')
-
-      // RELACIONAMENTO ENTRE A TABELA INVENTORIES
-      //table.integer('inventory_id').unsigned().references('inventories.id')
+      table.integer('owner').notNullable().unsigned().references('users.id').onDelete('CASCADE')
 
       // RELACIONAMENTO ENTRE A TABELA ADDRESSES
-      table.integer('address_id').unsigned().references('addresses.id')
+      table.integer('address_id').notNullable().unsigned().references('addresses.id')
 
-      /**
-       * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
-       */
       table.timestamp('created_at', { useTz: true })
       table.timestamp('updated_at', { useTz: true })
     })

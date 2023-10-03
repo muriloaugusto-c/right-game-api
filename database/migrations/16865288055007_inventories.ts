@@ -7,19 +7,14 @@ export default class extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id').unsigned().primary()
 
-      // RELACIONAMENTO ENTRE A TABELA PRODUCTS
-      //table.integer('products_id').unsigned().references('products.id')
-
       // RELACIONAMENTO ENTRE A TABELA SPORTSCENTERS
       table
         .integer('sports_center_id')
+        .notNullable()
         .unsigned()
         .references('sports_centers.id')
         .onDelete('CASCADE')
 
-      /**
-       * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
-       */
       table.timestamp('created_at', { useTz: true })
       table.timestamp('updated_at', { useTz: true })
     })

@@ -17,9 +17,6 @@ export default class extends BaseSchema {
       // RELACIONAMENTO ENTRE A TABELA USERS
       table.integer('address_id').notNullable().references('addresses_id')
 
-      /**
-       * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
-       */
       table.timestamp('created_at', { useTz: true })
       table.timestamp('updated_at', { useTz: true })
     })
