@@ -1,31 +1,34 @@
 import { BaseModel, belongsTo, BelongsTo, column } from '@ioc:Adonis/Lucid/Orm'
 import { DateTime } from 'luxon'
 
-import SportsCenter from './SportsCenter'
+import User from './User'
 
-export default class SportsCourt extends BaseModel {
+export default class Address extends BaseModel {
   @column({ isPrimary: true })
   public id: number
 
   @column()
-  public name: string
+  public street: string
 
   @column()
-  public modality: string
+  public streetNumber: number
 
   @column()
-  public description: string
+  public zipCode: number
 
   @column()
-  public size: string
+  public state: string
 
   @column()
-  public photoUrls: string
+  public city: string
 
-  @belongsTo(() => SportsCenter, {
-    foreignKey: 'sportsCenterId',
+  @column()
+  public neighborhood: string
+
+  @belongsTo(() => User, {
+    foreignKey: 'userId',
   })
-  public sportsCenterId: BelongsTo<typeof SportsCenter>
+  public user: BelongsTo<typeof User>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

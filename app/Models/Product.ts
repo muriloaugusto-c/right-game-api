@@ -1,9 +1,9 @@
 import { BaseModel, belongsTo, BelongsTo, column } from '@ioc:Adonis/Lucid/Orm'
 import { DateTime } from 'luxon'
 
-import SportsCenter from './SportsCenter'
+import Inventory from './Inventory'
 
-export default class SportsCourt extends BaseModel {
+export default class Product extends BaseModel {
   @column({ isPrimary: true })
   public id: number
 
@@ -11,21 +11,21 @@ export default class SportsCourt extends BaseModel {
   public name: string
 
   @column()
-  public modality: string
+  public value: string
+
+  @column()
+  public quantity: number
 
   @column()
   public description: string
 
   @column()
-  public size: string
-
-  @column()
   public photoUrls: string
 
-  @belongsTo(() => SportsCenter, {
-    foreignKey: 'sportsCenterId',
+  @belongsTo(() => Inventory, {
+    foreignKey: 'inventoryId',
   })
-  public sportsCenterId: BelongsTo<typeof SportsCenter>
+  public inventoryId: BelongsTo<typeof Inventory>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

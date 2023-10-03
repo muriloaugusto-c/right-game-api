@@ -1,23 +1,22 @@
 import BaseSchema from '@ioc:Adonis/Lucid/Schema'
 
 export default class extends BaseSchema {
-  protected tableName = 'sports_courts_requests'
+  protected tableName = 'sports_courts'
 
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
-      table.increments('id')
+      table.increments('id').unsigned().primary()
+      table.string('modality').notNullable()
+      table.string('description').notNullable()
+      table.string('size').notNullable()
+      table.string('photoUrls').notNullable()
 
-      table.integer('user_id').unsigned().references('id').inTable('users').notNullable()
+      // RELACIONAMENTO ENTRE A TABELA SPORTSCENTER
       table
-        .integer('sports_court_id')
+        .integer('sports_center_id')
         .unsigned()
-        .references('id')
-        .inTable('sports_courts')
-        .notNullable()
-      table.enum('status', ['PENDING', 'ACCEPTED', 'REJECTED']).defaultTo('PENDING').notNullable()
-      table.string('reservation_time').notNullable
-
-      //table.timestamps(true)
+        .references('sports_centers.id')
+        .onDelete('CASCADE')
 
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL

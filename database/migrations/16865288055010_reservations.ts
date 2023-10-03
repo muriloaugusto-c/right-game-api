@@ -1,17 +1,14 @@
 import BaseSchema from '@ioc:Adonis/Lucid/Schema'
 
 export default class extends BaseSchema {
-  protected tableName = 'users'
+  protected tableName = 'reservations'
 
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
-      table.increments('id').primary()
-      table.string('name').notNullable()
-      table.string('email').notNullable().unique()
-      table.string('cpf').notNullable().unique()
-      table.string('password').notNullable()
-      table.date('birthday').notNullable()
-      table.string('phone_number').notNullable()
+      table.increments('id').unsigned().primary()
+
+      // RELACIONAMENTO ENTRE A TABELA REQUESTRESERVATIONS
+      table.integer('request_reservation_id').unsigned().references('request_reservations.id')
 
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
