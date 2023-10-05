@@ -1,6 +1,6 @@
 import Factory from '@ioc:Adonis/Lucid/Factory'
-import User from 'App/Models/User'
 import SportsCourt from 'App/Models/SportsCourt'
+import User from 'App/Models/User'
 import { DateTime } from 'luxon'
 
 export const UserFactory = Factory.define(User, ({ faker }) => {
@@ -8,7 +8,6 @@ export const UserFactory = Factory.define(User, ({ faker }) => {
     name: faker.person.firstName(),
     cpf: faker.number.int(11),
     password: faker.internet.password(),
-    email: faker.internet.email(),
     birthday: DateTime.fromFormat('08-05-1999', 'dd-MM-yyyy'),
     phoneNumber: faker.phone.number('+55 41 #####-####'),
   }

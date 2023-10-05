@@ -22,7 +22,7 @@ test.group('Sports Court Request', (group) => {
     assert.equal(response.body().sportsCourtRequest.userId, user.id)
     assert.equal(response.body().sportsCourtRequest.sportsCourtId, sportsCourt.id)
     assert.equal(response.body().sportsCourtRequest.status, 'PENDING')
-  }).pin()
+  })
 
   test('it should return 409 when sports court request', async ({ assert, client }) => {
     const user = await UserFactory.create()

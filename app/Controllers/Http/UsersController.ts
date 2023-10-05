@@ -1,35 +1,32 @@
-import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import BadRequest from 'App/Exceptions/BadRequestException'
+import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import Database from '@ioc:Adonis/Lucid/Database'
+import Address from 'App/Models/Address'
 import User from 'App/Models/User'
-import CreateUser from 'App/Validators/CreateUserValidator'
-import UpdateUser from 'App/Validators/UpdateUserValidator'
 
 export default class UsersController {
   public async store({ request, response }: HttpContextContract) {
-    const userPayload = await request.validate(CreateUser)
+    const userPayload = request.only([
+      'name',
+      'email',
+      'password',
+      'birthday',
+      'doc',
+      'phoneNumber',
+    ])
 
-    const userByEmail = await User.findBy('email', userPayload.email)
-    const userByCpf = await User.findBy('cpf', userPayload.cpf)
-
-    if (userByEmail) throw new BadRequest('email is already in use', 409)
-    if (userByCpf) throw new BadRequest('cpf is already in use', 409)
+    const addressPayload = request.only([
+      'street',
+      'streetNumber',
+      'zipCode',
+      'state',
+      'city',
+      'neighborhood',
+    ])
 
     const user = await User.create(userPayload)
-    response.created({ user })
-  }
+    const address = await Address.create(addressPayload)
+    await address.related('user').save(user)
 
-  public async update({ request, response, bouncer }: HttpContextContract) {
-    const { email, password } = await request.validate(UpdateUser)
-    const id = request.param('id')
-    const user = await User.findOrFail(id)
-
-    await bouncer.authorize('updateUser', user)
-
-    user.email = email
-    user.password = password
-
-    await user.save()
-
-    response.ok({ user })
+    response.created({ user, address })
   }
 }

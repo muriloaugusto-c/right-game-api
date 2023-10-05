@@ -15,7 +15,7 @@ export default class extends BaseSchema {
       table.enum('type', ['USER', 'OWNER', 'ADMIN']).defaultTo('USER').notNullable()
 
       // RELACIONAMENTO ENTRE A TABELA USERS
-      table.integer('address_id').notNullable().references('addresses_id')
+      table.integer('address_id').references('addresses_id')
 
       table.timestamp('created_at', { useTz: true })
       table.timestamp('updated_at', { useTz: true })

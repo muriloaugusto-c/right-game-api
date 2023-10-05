@@ -29,10 +29,8 @@ export default class User extends BaseModel {
   @column()
   public type: 'USER' | 'OWNER' | 'ADMIN'
 
-  @hasOne(() => Address, {
-    foreignKey: 'userId',
-  })
-  public address: HasOne<typeof Address>
+  @column()
+  public addressId: number
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

@@ -25,6 +25,9 @@ Route.get('/', async () => {
 })
 
 Route.post('/users', 'UsersController.store')
+
+/*
+Route.post('/users', 'UsersController.store')
 Route.put('/users/:id', 'UsersController.update').middleware('auth')
 
 Route.post('/sessions', 'SessionsController.store')
@@ -56,3 +59,5 @@ Route.delete('/sportsCourt/:requestId/delete', 'SportsCourtRequestsController.de
 Route.put('/sportsCourt/:requestId/update', 'SportsCourtRequestsController.update').middleware(
   'auth'
 )
+
+*/
