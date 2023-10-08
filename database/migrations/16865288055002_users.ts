@@ -10,9 +10,9 @@ export default class extends BaseSchema {
       table.string('email').notNullable().unique()
       table.string('doc').notNullable().unique()
       table.string('password').notNullable()
-      table.date('birthday').notNullable()
+      table.date('birthday')
       table.string('phone_number').notNullable()
-      table.enum('type', ['USER', 'OWNER', 'ADMIN']).defaultTo('USER').notNullable()
+      table.enum('type', ['USER', 'OWNER', 'ADMIN']).defaultTo('USER')
 
       // RELACIONAMENTO ENTRE A TABELA USERS
       table.integer('address_id').references('addresses_id')

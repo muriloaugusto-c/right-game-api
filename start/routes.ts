@@ -26,6 +26,8 @@ Route.get('/', async () => {
 
 Route.post('/users', 'UsersController.store')
 
+Route.post('/sportsCenters/:sportsCenterId/inventory', 'ProductsController.store')
+
 /*
 Route.post('/users', 'UsersController.store')
 Route.put('/users/:id', 'UsersController.update').middleware('auth')

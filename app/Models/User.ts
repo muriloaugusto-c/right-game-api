@@ -1,5 +1,5 @@
 import Hash from '@ioc:Adonis/Core/Hash'
-import { BaseModel, beforeSave, column, hasOne, HasOne } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, beforeSave, belongsTo, BelongsTo, column } from '@ioc:Adonis/Lucid/Orm'
 import { DateTime } from 'luxon'
 
 import Address from './Address'
@@ -20,7 +20,7 @@ export default class User extends BaseModel {
   @column({ serializeAs: null })
   public password: string
 
-  @column.dateTime()
+  @column.date()
   public birthday: DateTime
 
   @column()
@@ -31,6 +31,9 @@ export default class User extends BaseModel {
 
   @column()
   public addressId: number
+
+  @belongsTo(() => Address, { foreignKey: 'addressId' })
+  public address: BelongsTo<typeof Address>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

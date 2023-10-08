@@ -1,5 +1,9 @@
 import Database from '@ioc:Adonis/Lucid/Database'
 import { test } from '@japa/runner'
+import User from 'App/Models/User'
+import { UserWithAddressFactory } from 'Database/factories'
+import AddressFactory from 'Database/factories/AddressFactory'
+import UserFactory from 'Database/factories/UserFactory'
 
 test.group('User', (group) => {
   group.each.setup(async () => {
@@ -31,7 +35,6 @@ test.group('User', (group) => {
     assert.equal(response.body().user.email, userPayload.email)
     assert.equal(response.body().user.doc, userPayload.doc)
     assert.equal(response.body().user.birthday, userPayload.birthday)
-    console.log(typeof response.body().user.casa)
     assert.equal(response.body().user.phone_number, userPayload.phoneNumber)
     assert.notExists(response.body().user.password, 'Password defined')
     assert.equal(response.body().address.street, userPayload.street)
@@ -40,8 +43,19 @@ test.group('User', (group) => {
     assert.equal(response.body().address.state, userPayload.state)
     assert.equal(response.body().address.city, userPayload.city)
     assert.equal(response.body().address.neighborhood, userPayload.neighborhood)
-    response.assertStatus(201)
-  })
 
-  test('it should return 422 when e-mail is already in use', async ({ client }) => {})
+    console.log(response.body().address.id + ` ADRESS ID  ` + response.body().user.addressId)
+    assert.equal(response.body().address.id, response.body().user.addressId)
+    response.assertStatus(201)
+  }).pin()
+
+  test('it should return 422 when e-mail is already in use', async ({ client }) => {
+    const { id } = await AddressFactory.create()
+    const user = await UserFactory.merge({ addressId: id }).create()
+
+    console.log(user)
+
+    //const response = await client.post('/users').json({ user, address })
+    //response.assertStatus(201)
+  })
 })

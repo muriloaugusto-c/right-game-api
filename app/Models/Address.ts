@@ -25,7 +25,7 @@ export default class Address extends BaseModel {
   @column()
   public neighborhood: string
 
-  @hasOne(() => User, {})
+  @hasOne(() => User, { foreignKey: 'addressId' })
   public user: HasOne<typeof User>
 
   @column.dateTime({ autoCreate: true })
