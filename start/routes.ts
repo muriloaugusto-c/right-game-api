@@ -24,7 +24,10 @@ Route.get('/', async () => {
   return { hello: 'world' }
 })
 
+Route.get('/users', 'UsersController.index')
 Route.post('/users', 'UsersController.store')
+Route.put('/users/:userId', 'UsersController.update')
+Route.delete('/users/:userId', 'UsersController.destroy')
 
 Route.post('/sportsCenters/:sportsCenterId/inventory', 'ProductsController.store')
 

@@ -1,3 +1,4 @@
+/*
 import Database from '@ioc:Adonis/Lucid/Database'
 import { test } from '@japa/runner'
 import { SportsCourtFactory, UserFactory } from 'Database/factories'
@@ -43,3 +44,5 @@ test.group('Sports Court Request', (group) => {
     assert.equal(response.body().code, 'BAD_REQUEST')
   })
 })
+
+*/

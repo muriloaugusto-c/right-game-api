@@ -1,8 +1,18 @@
 import Hash from '@ioc:Adonis/Core/Hash'
-import { BaseModel, beforeSave, belongsTo, BelongsTo, column } from '@ioc:Adonis/Lucid/Orm'
+import {
+  BaseModel,
+  beforeSave,
+  belongsTo,
+  BelongsTo,
+  column,
+  ModelQueryBuilderContract,
+  scope,
+} from '@ioc:Adonis/Lucid/Orm'
 import { DateTime } from 'luxon'
 
 import Address from './Address'
+
+type Builder = ModelQueryBuilderContract<typeof User>
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
@@ -45,4 +55,12 @@ export default class User extends BaseModel {
   public static async hashPassword(user: User) {
     if (user.$dirty.password) user.password = await Hash.make(user.password)
   }
+
+  public static withId = scope((query: Builder, id: number) => {
+    query.where('id', id)
+  })
+
+  public static withText = scope((query: Builder, text: string) => {
+    query.where('name', 'LIKE', `%${text}%`).orWhere('email', 'LIKE', `%${text}%`)
+  })
 }

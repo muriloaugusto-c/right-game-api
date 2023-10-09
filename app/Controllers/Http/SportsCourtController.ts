@@ -34,7 +34,7 @@ export default class SportsCourtController {
   public async destroy({ request, response, bouncer }: HttpContextContract) {
     const id = request.param('sportsCourtId') as number
     const sportsCourt = await SportsCourt.findOrFail(id)
-
+    console.log(request)
     await sportsCourt.delete()
 
     response.ok({})
