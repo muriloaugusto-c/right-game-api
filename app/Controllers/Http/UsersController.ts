@@ -54,9 +54,12 @@ export default class UsersController {
 
   public async destroy({ request, response }: HttpContextContract) {
     const id = request.param('userId') as number
+
     const user = await User.findOrFail(id)
+    const address = await Address.findOrFail(user.addressId)
 
     await user.delete()
+    await address.delete()
 
     response.ok({})
   }

@@ -2,6 +2,7 @@ import { BaseModel, belongsTo, BelongsTo, column, hasOne, HasOne } from '@ioc:Ad
 import { DateTime } from 'luxon'
 
 import User from './User'
+import SportsCenter from './SportsCenter'
 
 export default class Address extends BaseModel {
   @column({ isPrimary: true })
@@ -27,6 +28,11 @@ export default class Address extends BaseModel {
 
   @hasOne(() => User, { foreignKey: 'addressId' })
   public user: HasOne<typeof User>
+
+  @hasOne(() => SportsCenter, {
+    foreignKey: 'addressId',
+  })
+  public sportsCenter: HasOne<typeof SportsCenter>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

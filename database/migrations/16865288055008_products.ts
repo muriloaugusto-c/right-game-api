@@ -13,7 +13,7 @@ export default class extends BaseSchema {
       table.string('photo_urls')
 
       // RELACIONAMENTO ENTRE A TABELA INVENTORY
-      table.integer('inventory_id').notNullable().unsigned().references('inventories.id')
+      table.integer('inventory_id').unsigned().references('inventories.id')
 
       table.timestamp('created_at', { useTz: true })
       table.timestamp('updated_at', { useTz: true })

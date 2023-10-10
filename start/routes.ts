@@ -23,13 +23,25 @@ import Route from '@ioc:Adonis/Core/Route'
 Route.get('/', async () => {
   return { hello: 'world' }
 })
-
+// ROTAS USERS
 Route.get('/users', 'UsersController.index')
 Route.post('/users', 'UsersController.store')
 Route.put('/users/:userId', 'UsersController.update')
 Route.delete('/users/:userId', 'UsersController.destroy')
 
+// ROTAS SPORTSCENTERS
+Route.get('/sportsCenters', 'SportsCentersController.index')
+Route.post('/sportsCenters', 'SportsCentersController.store')
+Route.put('/sportsCenters/:sportsCenterId', 'SportsCentersController.update')
+Route.delete('/sportsCenters/:sportsCenterId', 'SportsCentersController.destroy')
+
+// ROTAS PRODUCTS
+Route.get('/sportsCenters/:sportsCenterId/inventory', 'ProductsController.index')
 Route.post('/sportsCenters/:sportsCenterId/inventory', 'ProductsController.store')
+Route.put('/sportsCenters/:sportsCenterId/inventory/:productId', 'ProductsController.update')
+Route.delete('/sportsCenters/:sportsCenterId/inventory/:productId', 'ProductsController.delete')
+
+//Route.post('/sportsCenters/:sportsCenterId/inventory', 'ProductsController.store')
 
 /*
 Route.post('/users', 'UsersController.store')

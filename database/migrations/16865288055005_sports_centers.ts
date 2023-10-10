@@ -15,10 +15,10 @@ export default class extends BaseSchema {
       table.string('steakhouse')
 
       // RELACIONAMENTO ENTRE A TABELA USERS
-      table.integer('owner').notNullable().unsigned().references('users.id').onDelete('CASCADE')
+      table.integer('owner').unsigned().references('users.id').onDelete('CASCADE')
 
       // RELACIONAMENTO ENTRE A TABELA ADDRESSES
-      table.integer('address_id').notNullable().unsigned().references('addresses.id')
+      table.integer('address_id').unsigned().references('addresses.id')
 
       table.timestamp('created_at', { useTz: true })
       table.timestamp('updated_at', { useTz: true })

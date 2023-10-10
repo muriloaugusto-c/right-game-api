@@ -1,17 +1,29 @@
-import { BaseModel, belongsTo, BelongsTo, column, hasMany, HasMany } from '@ioc:Adonis/Lucid/Orm'
+import {
+  BaseModel,
+  belongsTo,
+  BelongsTo,
+  column,
+  hasMany,
+  HasMany,
+  ModelQueryBuilderContract,
+  scope,
+} from '@ioc:Adonis/Lucid/Orm'
 import { DateTime } from 'luxon'
 
 import Product from './Product'
 import SportsCenter from './SportsCenter'
 
+type Builder = ModelQueryBuilderContract<typeof SportsCenter>
+
 export default class Inventory extends BaseModel {
   @column({ isPrimary: true })
   public id: number
 
-  @hasMany(() => Product, {
-    foreignKey: 'products',
-  })
+  @hasMany(() => Product, {})
   public products: HasMany<typeof Product>
+
+  @column()
+  public sportsCenterId: number
 
   @belongsTo(() => SportsCenter, {
     foreignKey: 'sportsCenterId',
@@ -23,4 +35,15 @@ export default class Inventory extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
+
+  public static withText = scope((query: Builder, text: string, sportsCenterId: number) => {
+    query
+      .select('*')
+      .from('products')
+      .join('inventories', 'products.inventory_id', 'inventories.id')
+      .where('inventories.sports_center_id', sportsCenterId)
+      .andWhere('products.name', 'LIKE', `%${text}%`)
+      .orWhere('products.description', 'LIKE', `%${text}%`)
+      .first()
+  })
 }
