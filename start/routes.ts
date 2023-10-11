@@ -39,9 +39,19 @@ Route.delete('/sportsCenters/:sportsCenterId', 'SportsCentersController.destroy'
 Route.get('/sportsCenters/:sportsCenterId/inventory', 'ProductsController.index')
 Route.post('/sportsCenters/:sportsCenterId/inventory', 'ProductsController.store')
 Route.put('/sportsCenters/:sportsCenterId/inventory/:productId', 'ProductsController.update')
-Route.delete('/sportsCenters/:sportsCenterId/inventory/:productId', 'ProductsController.delete')
+Route.delete('/sportsCenters/:sportsCenterId/inventory/:productId', 'ProductsController.destroy')
 
-//Route.post('/sportsCenters/:sportsCenterId/inventory', 'ProductsController.store')
+// ROTAS SPORTSCOURTS
+Route.get('/sportsCenters/:sportsCenterId/sportsCourts', 'SportsCourtsController.index')
+Route.post('/sportsCenters/:sportsCenterId/sportsCourts', 'SportsCourtsController.store')
+Route.put(
+  '/sportsCenters/:sportsCenterId/sportsCourts/:sportsCourtId',
+  'SportsCourtsController.update'
+)
+Route.delete(
+  '/sportsCenters/:sportsCenterId/sportsCourts/:sportsCourtId',
+  'SportsCourtsController.destroy'
+)
 
 /*
 Route.post('/users', 'UsersController.store')

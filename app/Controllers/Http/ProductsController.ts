@@ -45,7 +45,7 @@ export default class ProductsController {
     response.ok({ product: updatedProduct })
   }
 
-  public async delete({ request, response }: HttpContextContract) {
+  public async destroy({ request, response }: HttpContextContract) {
     const sportsCenterId = request.param('sportsCenterId') as number
     const productId = request.param('productId') as number
 
@@ -56,7 +56,7 @@ export default class ProductsController {
   }
 
   private filterByQueryString(text: string, sportsCenterId: number) {
-    if (text && text) return this.filterByText(text, sportsCenterId)
+    if (text && sportsCenterId) return this.filterByText(text, sportsCenterId)
     else return this.all(sportsCenterId)
   }
 

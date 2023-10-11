@@ -24,9 +24,11 @@ export default class UptadeSportsCourtValidator {
    *    ```
    */
   public schema = schema.create({
-    name: schema.string(),
-    description: schema.string(),
-    location: schema.string(),
+    name: schema.string.optional(),
+    modality: schema.string.optional(),
+    description: schema.string.optional(),
+    size: schema.string.optional(),
+    photoUrls: schema.string.optional(),
   })
 
   /**

@@ -52,6 +52,5 @@ export default class Product extends BaseModel {
       .where('inventories.sports_center_id', sportsCenterId)
       .andWhere('products.name', 'LIKE', `%${text}%`)
       .orWhere('products.description', 'LIKE', `%${text}%`)
-      .first()
   })
 }

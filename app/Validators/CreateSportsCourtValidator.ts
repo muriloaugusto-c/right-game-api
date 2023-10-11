@@ -25,9 +25,10 @@ export default class CreateSportsCourtValidator {
    */
   public schema = schema.create({
     name: schema.string(),
+    modality: schema.string(),
     description: schema.string(),
-    location: schema.string(),
-    owner: schema.number(),
+    size: schema.string(),
+    photoUrls: schema.string(),
   })
 
   /**

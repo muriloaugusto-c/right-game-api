@@ -1,7 +1,16 @@
-import { BaseModel, belongsTo, BelongsTo, column } from '@ioc:Adonis/Lucid/Orm'
+import {
+  BaseModel,
+  belongsTo,
+  BelongsTo,
+  column,
+  ModelQueryBuilderContract,
+  scope,
+} from '@ioc:Adonis/Lucid/Orm'
 import { DateTime } from 'luxon'
 
 import SportsCenter from './SportsCenter'
+
+type Builder = ModelQueryBuilderContract<typeof SportsCourt>
 
 export default class SportsCourt extends BaseModel {
   @column({ isPrimary: true })
@@ -22,14 +31,28 @@ export default class SportsCourt extends BaseModel {
   @column()
   public photoUrls: string
 
+  @column()
+  public sportsCenterId: number
+
   @belongsTo(() => SportsCenter, {
     foreignKey: 'sportsCenterId',
   })
-  public sportsCenterId: BelongsTo<typeof SportsCenter>
+  public sportsCenter: BelongsTo<typeof SportsCenter>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
+
+  public static withText = scope((query: Builder, text: string, sportsCenterId: number) => {
+    query
+      .where('sports_center_id', sportsCenterId)
+      .andWhere('name', 'LIKE', `%${text}%`)
+      .orWhere('description', 'LIKE', `%${text}%`)
+  })
+
+  public static withId = scope((query: Builder, sportsCourtId: number) => {
+    query.where('id', sportsCourtId)
+  })
 }

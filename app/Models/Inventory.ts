@@ -35,15 +35,4 @@ export default class Inventory extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
-
-  public static withText = scope((query: Builder, text: string, sportsCenterId: number) => {
-    query
-      .select('*')
-      .from('products')
-      .join('inventories', 'products.inventory_id', 'inventories.id')
-      .where('inventories.sports_center_id', sportsCenterId)
-      .andWhere('products.name', 'LIKE', `%${text}%`)
-      .orWhere('products.description', 'LIKE', `%${text}%`)
-      .first()
-  })
 }
