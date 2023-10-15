@@ -6,7 +6,7 @@ export default Factory.define(User, ({ faker }) => {
   return {
     name: faker.person.firstName(),
     email: faker.internet.email(),
-    doc: faker.number.int({ min: 11, max: 11 }),
+    doc: faker.number.int(),
     password: faker.internet.password(),
     birthday: DateTime.fromJSDate(faker.date.anytime()),
     phoneNumber: faker.phone.number('+55 ## ##### ####'),

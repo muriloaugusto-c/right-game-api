@@ -1,7 +1,7 @@
-/*
 import Database from '@ioc:Adonis/Lucid/Database'
 import { test } from '@japa/runner'
-import { UserFactory } from 'Database/factories'
+import AddressFactory from 'Database/factories/AddressFactory'
+import UserFactory from 'Database/factories/UserFactory'
 
 test.group('Session', (group) => {
   group.each.setup(async () => {
@@ -11,31 +11,33 @@ test.group('Session', (group) => {
 
   test('it should authenticate an user', async ({ assert, client }) => {
     const plainPassword = 'test'
-    const { id, email } = await UserFactory.merge({ password: plainPassword }).create()
+    const { id } = await AddressFactory.create()
+    const user = await UserFactory.merge({ addressId: id, password: plainPassword }).create()
 
     const response = await client.post('/sessions').json({
-      email: email,
+      email: user.email,
       password: plainPassword,
     })
 
     response.assertStatus(201)
     assert.exists(response.body().user, 'User undefined')
-    assert.equal(response.body().user.id, id)
+    assert.equal(response.body().user.id, user.id)
   })
 
   test('it should return an api token when session is created', async ({ assert, client }) => {
     const plainPassword = 'test'
-    const { id, email } = await UserFactory.merge({ password: plainPassword }).create()
+    const { id } = await AddressFactory.create()
+    const user = await UserFactory.merge({ addressId: id, password: plainPassword }).create()
 
     const response = await client.post('/sessions').json({
-      email: email,
+      email: user.email,
       password: plainPassword,
     })
 
     response.assertStatus(201)
     assert.exists(response.body().token, 'Token undefined')
-    assert.equal(response.body().user.id, id)
-  })
+    assert.equal(response.body().user.id, user.id)
+  }).pin
 
   test('it should return 400 when credentials are not provided', async ({ assert, client }) => {
     const response = await client.post('/sessions').json({})
@@ -45,7 +47,8 @@ test.group('Session', (group) => {
   })
 
   test('it should return 400 when credentials are invalid', async ({ assert, client }) => {
-    const { email } = await UserFactory.create()
+    const { id } = await AddressFactory.create()
+    const { email } = await UserFactory.merge({ addressId: id }).create()
     const response = await client.post('/sessions').json({
       email,
       password: 'teste1234',
@@ -58,7 +61,8 @@ test.group('Session', (group) => {
 
   test('it should return 400 when credentials are invalid', async ({ assert, client }) => {
     const plainPassword = '123456'
-    await UserFactory.merge({ password: plainPassword }).create()
+    const { id } = await AddressFactory.create()
+    await UserFactory.merge({ addressId: id, password: plainPassword }).create()
     const response = await client.post('/sessions').json({
       email: 'test@test.com',
       password: plainPassword,

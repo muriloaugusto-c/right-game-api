@@ -11,13 +11,13 @@ export default class extends BaseSchema {
       table.enum('status', ['PENDING', 'ACCEPTED', 'REJECTED']).defaultTo('PENDING').notNullable()
 
       // RELACIONAMENTO ENTRE A TABELA USERS
-      table.integer('owner').notNullable().unsigned().references('users.id')
+      table.integer('owner_id').unsigned().references('users.id')
 
       // RELACIONAMENTO ENTRE A TABELA USERS
-      table.integer('user_id').notNullable().unsigned().references('users.id')
+      table.integer('user_id').unsigned().references('users.id')
 
       // RELACIONAMENTO ENTRE A TABELA SPORTSCOURT
-      table.integer('sports_court_id').notNullable().unsigned().references('sports_courts.id')
+      table.integer('sports_court_id').unsigned().references('sports_courts.id')
 
       table.timestamp('created_at', { useTz: true })
       table.timestamp('updated_at', { useTz: true })

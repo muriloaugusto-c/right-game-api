@@ -1,8 +1,9 @@
-import { BaseModel, column, hasOne, HasOne } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, belongsTo, BelongsTo, column, HasOne, hasOne } from '@ioc:Adonis/Lucid/Orm'
 import { DateTime } from 'luxon'
 
 import SportsCourt from './SportsCourt'
 import User from './User'
+import Reservation from './Reservation'
 
 export default class RequestReservation extends BaseModel {
   @column({ isPrimary: true })
@@ -17,18 +18,30 @@ export default class RequestReservation extends BaseModel {
   @column()
   public status: 'PENDING' | 'ACCEPTED' | 'REJECTED'
 
-  @hasOne(() => User, {
-    foreignKey: 'owner',
+  @belongsTo(() => User, {
+    foreignKey: 'ownerId',
   })
-  public owner: HasOne<typeof User>
+  public owner: BelongsTo<typeof User>
 
-  @hasOne(() => User, {
+  @column()
+  public ownerId: number
+
+  @belongsTo(() => User, {
     foreignKey: 'userId',
   })
-  public user: HasOne<typeof User>
+  public user: BelongsTo<typeof User>
 
-  @hasOne(() => SportsCourt, {})
-  public sportsCourt: HasOne<typeof SportsCourt>
+  @column()
+  public userId: number
+
+  @belongsTo(() => SportsCourt, { foreignKey: 'sportsCourtId' })
+  public sportsCourt: BelongsTo<typeof SportsCourt>
+
+  @column()
+  public sportsCourtId: number
+
+  @hasOne(() => Reservation, {})
+  public reservation: HasOne<typeof Reservation>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

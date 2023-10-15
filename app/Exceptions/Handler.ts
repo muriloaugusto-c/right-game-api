@@ -1,4 +1,6 @@
+import { Exception } from '@adonisjs/core/build/standalone'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import HttpExceptionHandler from '@ioc:Adonis/Core/HttpExceptionHandler'
 /*
 |--------------------------------------------------------------------------
 | Http Exception Handler
@@ -15,8 +17,6 @@ import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 */
 
 import Logger from '@ioc:Adonis/Core/Logger'
-import HttpExceptionHandler from '@ioc:Adonis/Core/HttpExceptionHandler'
-import { Exception } from '@adonisjs/core/build/standalone'
 
 export default class ExceptionHandler extends HttpExceptionHandler {
   constructor() {
@@ -43,6 +43,19 @@ export default class ExceptionHandler extends HttpExceptionHandler {
         message: 'invalid credentials',
         status: 400,
       })
+    else if (error.code === 'E_UNAUTHORIZED_ACCESS')
+      return ctx.response.status(error.status).send({
+        code: 'E_UNAUTHORIZED_ACCESS',
+        message: 'user unauthorized, please sign-in',
+        status: 401,
+      })
+    else if (error.code === '23505') {
+      return ctx.response.status(409).send({
+        code: 'DUPLICATE_ENTRY',
+        message: error.message,
+        status: 409,
+      })
+    }
     return super.handle(error, ctx)
   }
 }

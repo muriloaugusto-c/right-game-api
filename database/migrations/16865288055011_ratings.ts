@@ -9,19 +9,10 @@ export default class extends BaseSchema {
 
       table.string('text').notNullable()
 
-      // RELACIONAMENTO ENTRE A TABELA USERS
-      table.integer('user_id').notNullable().unsigned().references('users.id')
-
-      // RELACIONAMENTO ENTRE A TABELA SPORTSCOURTS
-      table
-        .integer('sports_courts_id')
-        .notNullable()
-        .unsigned()
-        .references('sports_courts.id')
-        .onDelete('CASCADE')
-
       // RELACIONAMENTO ENTRE A TABELA RESERVATIONS
-      table.integer('reservations_id').notNullable().unsigned().references('reservations.id')
+      table.integer('reservations_id').unsigned().references('reservations.id')
+
+      table.integer('sports_court_id').unsigned().references('sports_courts.id')
 
       table.timestamp('created_at', { useTz: true })
       table.timestamp('updated_at', { useTz: true })

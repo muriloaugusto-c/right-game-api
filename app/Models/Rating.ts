@@ -1,4 +1,4 @@
-import { BaseModel, column, hasOne, HasOne } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, belongsTo, BelongsTo, column, hasOne, HasOne } from '@ioc:Adonis/Lucid/Orm'
 import { DateTime } from 'luxon'
 
 import Reservation from './Reservation'
@@ -15,11 +15,17 @@ export default class Rating extends BaseModel {
   @hasOne(() => User, {})
   public user: HasOne<typeof User>
 
-  @hasOne(() => SportsCourt, {})
-  public sportsCourt: HasOne<typeof SportsCourt>
+  @column()
+  public sportsCourtId: number
 
-  @hasOne(() => Reservation, {})
-  public reservation: HasOne<typeof Reservation>
+  @belongsTo(() => SportsCourt, {})
+  public sportsCourt: BelongsTo<typeof SportsCourt>
+
+  @column()
+  public reservationId: number
+
+  @belongsTo(() => Reservation, { foreignKey: 'reservationId' })
+  public reservation: BelongsTo<typeof Reservation>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

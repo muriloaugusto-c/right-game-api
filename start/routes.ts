@@ -20,14 +20,12 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 
-Route.get('/', async () => {
-  return { hello: 'world' }
-})
 // ROTAS USERS
 Route.get('/users', 'UsersController.index')
 Route.post('/users', 'UsersController.store')
-Route.put('/users/:userId', 'UsersController.update')
-Route.delete('/users/:userId', 'UsersController.destroy')
+Route.put('/users/:userId', 'UsersController.update').middleware('auth')
+Route.put('/users/:userId/owner', 'UsersController.makeOwner').middleware('auth')
+Route.delete('/users/:userId', 'UsersController.destroy').middleware('auth')
 
 // ROTAS SPORTSCENTERS
 Route.get('/sportsCenters', 'SportsCentersController.index')
@@ -53,38 +51,31 @@ Route.delete(
   'SportsCourtsController.destroy'
 )
 
-/*
-Route.post('/users', 'UsersController.store')
-Route.put('/users/:id', 'UsersController.update').middleware('auth')
+//ROTAS REQUESTRESERVATION
+Route.get('/requestReservations/:ownerId', 'RequestReservationsController.index')
+Route.post(
+  '/sportsCenters/:sportsCenterId/sportsCourts/:sportsCourtId/requestReservations',
+  'RequestReservationsController.store'
+)
+Route.put('/requestReservations/:requestReservationId', 'RequestReservationsController.update')
+Route.delete('/requestReservations/:requestReservationId', 'RequestReservationsController.delete')
+Route.put(
+  '/requestReservations/:requestReservationId/accept',
+  'RequestReservationsController.accept'
+)
+Route.put(
+  '/requestReservations/:requestReservationId/reject',
+  'RequestReservationsController.reject'
+)
 
-Route.post('/sessions', 'SessionsController.store')
-Route.delete('/sessions', 'SessionsController.destroy')
-
-Route.get('/getAllQuadras', 'SportsCourtController.getAllQuadras')
-Route.get('/sportsCourt', 'SportsCourtController.index')
-Route.get('/sportsCourt/:sportsCourtId', 'SportsCourtController.show')
-Route.post('/sportsCourt', 'SportsCourtController.store').middleware('auth')
-Route.put('/sportsCourt/:sportsCourtId', 'SportsCourtController.update').middleware('auth')
-Route.delete('/sportsCourt/:sportsCourtId', 'SportsCourtController.destroy').middleware('auth')
-
-Route.get('/sportsCourtRequests/index', 'SportsCourtRequestsController.index').middleware('auth')
+//ROTAS RATING
 
 Route.post(
-  '/sportsCourt/:sportsCourtId/requests',
-  'SportsCourtRequestsController.store'
-).middleware('auth')
-
-Route.get(
-  '/sportsCourt/:requestId/requests_status',
-  'SportsCourtRequestsController.show'
-).middleware('auth')
-
-Route.delete('/sportsCourt/:requestId/delete', 'SportsCourtRequestsController.destroy').middleware(
-  'auth'
+  '/sportsCenters/:sportsCenterId/sportsCourts/:sportsCourtId/rating',
+  'RatingsController.store'
 )
+//Route.put('')
 
-Route.put('/sportsCourt/:requestId/update', 'SportsCourtRequestsController.update').middleware(
-  'auth'
-)
-
-*/
+//ROTAS SESSIONS
+Route.post('/sessions', 'SessionsController.store')
+Route.delete('/sessions', 'SessionsController.destroy')

@@ -8,11 +8,7 @@ export default class extends BaseSchema {
       table.increments('id').unsigned().primary()
 
       // RELACIONAMENTO ENTRE A TABELA REQUESTRESERVATIONS
-      table
-        .integer('request_reservation_id')
-        .notNullable()
-        .unsigned()
-        .references('request_reservations.id')
+      table.integer('request_reservation_id').unsigned().references('request_reservations.id')
 
       table.timestamp('created_at', { useTz: true })
       table.timestamp('updated_at', { useTz: true })

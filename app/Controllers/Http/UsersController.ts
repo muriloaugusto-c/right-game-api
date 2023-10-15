@@ -1,5 +1,4 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import BadRequest from 'App/Exceptions/BadRequestException'
 import Address from 'App/Models/Address'
 import User from 'App/Models/User'
 import CreateAddressValidator from 'App/Validators/CreateAddressValidator'
@@ -21,12 +20,6 @@ export default class UsersController {
     const userPayload = await request.validate(CreateUserValidator)
     const addressPayload = await request.validate(CreateAddressValidator)
 
-    const userByEmail = await User.findBy('email', userPayload.email)
-    const userByDoc = await User.findBy('doc', userPayload.doc)
-
-    if (userByEmail) throw new BadRequest('email is already in use', 409)
-    if (userByDoc) throw new BadRequest('doc is already in use', 409)
-
     const user = await User.create(userPayload)
     const address = await Address.create(addressPayload)
 
@@ -36,12 +29,15 @@ export default class UsersController {
     response.created({ user, address })
   }
 
-  public async update({ request, response }: HttpContextContract) {
+  public async update({ request, response, bouncer }: HttpContextContract) {
     const id = request.param('userId') as number
     const userPayload = await request.validate(UpdateUserValidator)
     const addressPayload = await request.validate(UpdateAdressValidator)
 
     const user = await User.findOrFail(id)
+
+    await bouncer.authorize('updateUser', user)
+
     const updatedUser = await user.merge(userPayload).save()
 
     const addressId = user.addressId
@@ -52,16 +48,29 @@ export default class UsersController {
     response.ok({ user: updatedUser, address: updatedAddress })
   }
 
-  public async destroy({ request, response }: HttpContextContract) {
+  public async destroy({ request, response, bouncer }: HttpContextContract) {
     const id = request.param('userId') as number
 
     const user = await User.findOrFail(id)
     const address = await Address.findOrFail(user.addressId)
 
+    await bouncer.authorize('deleteUser', user)
+
     await user.delete()
     await address.delete()
 
     response.ok({})
+  }
+
+  public async makeOwner({ request, response, bouncer }: HttpContextContract) {
+    const id = request.param('userId') as number
+    const user = await User.findOrFail(id)
+
+    await bouncer.authorize('makeOnwer')
+
+    const updateUser = await user.merge({ type: 'OWNER' }).save()
+
+    response.ok({ user: updateUser })
   }
 
   private filterByQueryString(text: string, userId: number) {

@@ -5,12 +5,15 @@ import {
   belongsTo,
   BelongsTo,
   column,
+  hasMany,
+  HasMany,
   ModelQueryBuilderContract,
   scope,
 } from '@ioc:Adonis/Lucid/Orm'
 import { DateTime } from 'luxon'
 
 import Address from './Address'
+import RequestReservation from './RequestReservation'
 
 type Builder = ModelQueryBuilderContract<typeof User>
 
@@ -44,6 +47,9 @@ export default class User extends BaseModel {
 
   @belongsTo(() => Address, { foreignKey: 'addressId' })
   public address: BelongsTo<typeof Address>
+
+  @hasMany(() => RequestReservation, {})
+  public requestReservation: HasMany<typeof RequestReservation>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

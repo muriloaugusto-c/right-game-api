@@ -6,8 +6,8 @@
  */
 
 import Bouncer from '@ioc:Adonis/Addons/Bouncer'
-import User from 'App/Models/User'
 import SportsCourt from 'App/Models/SportsCourt'
+import User from 'App/Models/User'
 
 /*
 |--------------------------------------------------------------------------
@@ -34,11 +34,11 @@ import SportsCourt from 'App/Models/SportsCourt'
 export const { actions } = Bouncer.define('updateUser', (user: User, updatedUser: User) => {
   return user.id === updatedUser.id
 })
-  .define('updateSportsCourt', (user: User, updatedSportsCourt: SportsCourt) => {
-    return user.id === updatedSportsCourt.owner
+  .define('deleteUser', (user: User, deletedUser: User) => {
+    return user.id === deletedUser.id
   })
-  .define('deleteSportsGroups', (user: User, deletedSportsCourt: SportsCourt) => {
-    return user.id === deletedSportsCourt.owner
+  .define('makeOnwer', (user: User) => {
+    return user.type === 'ADMIN'
   })
 
 /*
