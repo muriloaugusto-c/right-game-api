@@ -174,12 +174,11 @@ test.group('User', (group) => {
     }
 
     const response = await client.put(`/users/${user.id}`).json(userPayload).loginAs(user2)
-    console.log(response.body())
 
     response.assertStatus(403)
-  }).pin()
+  })
 
-  test('it should delete an user', async ({ client, assert }) => {
+  test('it should delete an user', async ({ client }) => {
     const address = await AddressFactory.create()
     const user = await UserFactory.merge({ addressId: address.id }).create()
 
@@ -221,7 +220,7 @@ test.group('User', (group) => {
     assert.equal(response.body().user.type, 'OWNER')
   })
 
-  test('it should return 403 when user is not admin', async ({ assert, client }) => {
+  test('it should return 403 when make an owner user is not admin', async ({ assert, client }) => {
     const address = await AddressFactory.create()
     const user = await UserFactory.merge({ addressId: address.id }).create()
     const user2 = await UserFactory.create()

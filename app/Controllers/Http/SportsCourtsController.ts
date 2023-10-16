@@ -15,21 +15,27 @@ export default class SportsCourtsController {
     return response.ok({ sportsCourt })
   }
 
-  public async store({ request, response }: HttpContextContract) {
+  public async store({ request, response, bouncer }: HttpContextContract) {
     const sportsCenterId = request.param('sportsCenterId') as number
     const sportsCourtPayload = await request.validate(CreateSportsCourtValidator)
 
     const sportsCenter = await SportsCenter.findOrFail(sportsCenterId)
+
+    await bouncer.authorize('manageSportsCenter', sportsCenter)
 
     const sportsCourt = await sportsCenter.related('sportsCourt').create(sportsCourtPayload)
 
     response.created({ sportsCourt })
   }
 
-  public async update({ request, response }: HttpContextContract) {
+  public async update({ request, response, bouncer }: HttpContextContract) {
     const sportsCenterId = request.param('sportsCenterId') as number
     const sportsCourtId = request.param('sportsCourtId') as number
     const sportsCourtPayload = await request.validate(UptadeSportsCourtValidator)
+
+    const sportsCenter = await SportsCenter.findOrFail(sportsCenterId)
+
+    await bouncer.authorize('manageSportsCenter', sportsCenter)
 
     const sportsCourt = await SportsCourt.findOrFail(sportsCourtId)
 
@@ -38,9 +44,13 @@ export default class SportsCourtsController {
     response.ok({ sportsCourt: updatedSportsCourt })
   }
 
-  public async destroy({ request, response }: HttpContextContract) {
+  public async destroy({ request, response, bouncer }: HttpContextContract) {
     const sportsCenterId = request.param('sportsCenterId') as number
     const sportsCourtId = request.param('sportsCourtId') as number
+
+    const sportsCenter = await SportsCenter.findOrFail(sportsCenterId)
+
+    await bouncer.authorize('manageSportsCenter', sportsCenter)
 
     const sportsCourt = await SportsCourt.findOrFail(sportsCourtId)
     await sportsCourt.delete()

@@ -29,44 +29,61 @@ Route.delete('/users/:userId', 'UsersController.destroy').middleware('auth')
 
 // ROTAS SPORTSCENTERS
 Route.get('/sportsCenters', 'SportsCentersController.index')
-Route.post('/sportsCenters', 'SportsCentersController.store')
-Route.put('/sportsCenters/:sportsCenterId', 'SportsCentersController.update')
-Route.delete('/sportsCenters/:sportsCenterId', 'SportsCentersController.destroy')
+Route.post('/sportsCenters', 'SportsCentersController.store').middleware('auth')
+Route.put('/sportsCenters/:sportsCenterId', 'SportsCentersController.update').middleware('auth')
+Route.delete('/sportsCenters/:sportsCenterId', 'SportsCentersController.destroy').middleware('auth')
 
 // ROTAS PRODUCTS
 Route.get('/sportsCenters/:sportsCenterId/inventory', 'ProductsController.index')
-Route.post('/sportsCenters/:sportsCenterId/inventory', 'ProductsController.store')
-Route.put('/sportsCenters/:sportsCenterId/inventory/:productId', 'ProductsController.update')
-Route.delete('/sportsCenters/:sportsCenterId/inventory/:productId', 'ProductsController.destroy')
+Route.post('/sportsCenters/:sportsCenterId/inventory', 'ProductsController.store').middleware(
+  'auth'
+)
+Route.put(
+  '/sportsCenters/:sportsCenterId/inventory/:productId',
+  'ProductsController.update'
+).middleware('auth')
+Route.delete(
+  '/sportsCenters/:sportsCenterId/inventory/:productId',
+  'ProductsController.destroy'
+).middleware('auth')
 
 // ROTAS SPORTSCOURTS
 Route.get('/sportsCenters/:sportsCenterId/sportsCourts', 'SportsCourtsController.index')
-Route.post('/sportsCenters/:sportsCenterId/sportsCourts', 'SportsCourtsController.store')
+Route.post(
+  '/sportsCenters/:sportsCenterId/sportsCourts',
+  'SportsCourtsController.store'
+).middleware('auth')
 Route.put(
   '/sportsCenters/:sportsCenterId/sportsCourts/:sportsCourtId',
   'SportsCourtsController.update'
-)
+).middleware('auth')
 Route.delete(
   '/sportsCenters/:sportsCenterId/sportsCourts/:sportsCourtId',
   'SportsCourtsController.destroy'
-)
+).middleware('auth')
 
 //ROTAS REQUESTRESERVATION
-Route.get('/requestReservations/:ownerId', 'RequestReservationsController.index')
+Route.get('/requestReservations/:ownerId', 'RequestReservationsController.index').middleware('auth')
 Route.post(
   '/sportsCenters/:sportsCenterId/sportsCourts/:sportsCourtId/requestReservations',
   'RequestReservationsController.store'
-)
-Route.put('/requestReservations/:requestReservationId', 'RequestReservationsController.update')
-Route.delete('/requestReservations/:requestReservationId', 'RequestReservationsController.delete')
+).middleware('auth')
+Route.put(
+  '/requestReservations/:requestReservationId',
+  'RequestReservationsController.update'
+).middleware('auth')
+Route.delete(
+  '/requestReservations/:requestReservationId',
+  'RequestReservationsController.delete'
+).middleware('auth')
 Route.put(
   '/requestReservations/:requestReservationId/accept',
   'RequestReservationsController.accept'
-)
+).middleware('auth')
 Route.put(
   '/requestReservations/:requestReservationId/reject',
   'RequestReservationsController.reject'
-)
+).middleware('auth')
 
 //ROTAS RATING
 

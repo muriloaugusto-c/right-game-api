@@ -11,9 +11,9 @@ test.group('SportsCenter', (group) => {
     return () => Database.rollbackGlobalTransaction()
   })
 
-  test('it should create a sports court', async ({ assert, client }) => {
+  test('it should create a Sports Court', async ({ assert, client }) => {
     const { id } = await AddressFactory.create()
-    const user = await UserFactory.merge({ addressId: id }).create()
+    const user = await UserFactory.merge({ addressId: id, type: 'OWNER' }).create()
     const address = await AddressFactory.create()
     const sportsCenter = await SportsCenterFactory.merge({
       addressId: address.id,
@@ -31,6 +31,7 @@ test.group('SportsCenter', (group) => {
     const response = await client
       .post(`/sportsCenters/${sportsCenter.id}/sportsCourts`)
       .json(sportsCourtPayload)
+      .loginAs(user)
 
     response.assertStatus(201)
     assert.exists(response.body().sportsCourt, 'Sports Court Undefined')
@@ -42,9 +43,9 @@ test.group('SportsCenter', (group) => {
     assert.equal(response.body().sportsCourt.photo_urls, sportsCourtPayload.photoUrls)
   })
 
-  test('it should update a sports court', async ({ assert, client }) => {
+  test('it should update a Sports Court', async ({ assert, client }) => {
     const { id } = await AddressFactory.create()
-    const user = await UserFactory.merge({ addressId: id }).create()
+    const user = await UserFactory.merge({ addressId: id, type: 'OWNER' }).create()
     const address = await AddressFactory.create()
     const sportsCenter = await SportsCenterFactory.merge({
       addressId: address.id,
@@ -60,6 +61,7 @@ test.group('SportsCenter', (group) => {
     const response = await client
       .put(`/sportsCenters/${sportsCenter.id}/sportsCourts/${sportsCourt.id}`)
       .json(sportsCourtPayload)
+      .loginAs(user)
 
     response.assertStatus(200)
     assert.exists(response.body().sportsCourt, 'Sports Courts Undefined')
@@ -71,9 +73,9 @@ test.group('SportsCenter', (group) => {
     assert.equal(response.body().sportsCourt.size, sportsCourt.size)
   })
 
-  test('it should delete a sport court', async ({ assert, client }) => {
+  test('it should delete a Sports Court', async ({ client }) => {
     const { id } = await AddressFactory.create()
-    const user = await UserFactory.merge({ addressId: id }).create()
+    const user = await UserFactory.merge({ addressId: id, type: 'OWNER' }).create()
     const address = await AddressFactory.create()
     const sportsCenter = await SportsCenterFactory.merge({
       addressId: address.id,
@@ -84,6 +86,7 @@ test.group('SportsCenter', (group) => {
     const response = await client
       .delete(`/sportsCenters/${sportsCenter.id}/sportsCourts/${sportsCourt.id}`)
       .json({})
+      .loginAs(user)
 
     response.assertStatus(200)
   })

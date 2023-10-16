@@ -17,13 +17,15 @@ export default class SportsCentersController {
     return response.ok({ sportsCenter })
   }
 
-  public async store({ request, response }: HttpContextContract) {
+  public async store({ request, response, bouncer }: HttpContextContract) {
     const sportsCenterPayload = await request.validate(CreateSportsCenterValidator)
     const addressPayload = await request.validate(CreateAddressValidator)
 
     const address = await Address.create(addressPayload)
     const sportsCenter = await SportsCenter.create(sportsCenterPayload)
     const inventory = await Inventory.create({ sportsCenterId: sportsCenter.id })
+
+    await bouncer.authorize('createSportsCenter')
 
     await address.related('sportsCenter').save(sportsCenter)
     await sportsCenter.merge({ addressId: address.id }).save()
@@ -32,12 +34,15 @@ export default class SportsCentersController {
     response.created({ sportsCenter })
   }
 
-  public async update({ request, response }: HttpContextContract) {
+  public async update({ request, response, bouncer }: HttpContextContract) {
     const id = request.param('sportsCenterId') as number
     const sportsCenterPayload = await request.validate(UpdateSportsCenterValidator)
     const addressPayload = await request.validate(UpdateAdressValidator)
 
     const sportsCenter = await SportsCenter.findOrFail(id)
+
+    await bouncer.authorize('manageSportsCenter', sportsCenter)
+
     const updatedSportsCenter = await sportsCenter.merge(sportsCenterPayload).save()
 
     const addressId = sportsCenter.addressId
@@ -48,11 +53,13 @@ export default class SportsCentersController {
     response.ok({ sportsCenter: updatedSportsCenter, address: updatedAddress })
   }
 
-  public async destroy({ request, response }: HttpContextContract) {
+  public async destroy({ request, response, bouncer }: HttpContextContract) {
     const id = request.param('sportsCenterId') as number
 
     const sportsCenter = await SportsCenter.findOrFail(id)
     const address = await Address.findOrFail(sportsCenter.addressId)
+
+    await bouncer.authorize('manageSportsCenter', sportsCenter)
 
     await sportsCenter.delete()
     await address.delete()

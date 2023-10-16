@@ -16,11 +16,13 @@ export default class ProductsController {
     return response.ok({ sportsCenter })
   }
 
-  public async store({ request, response }: HttpContextContract) {
+  public async store({ request, response, bouncer }: HttpContextContract) {
     const id = request.param('sportsCenterId') as number
     const productPayload = await request.validate(ProductValidator)
 
     const sportsCenter = await SportsCenter.findOrFail(id)
+
+    await bouncer.authorize('manageSportsCenter', sportsCenter)
 
     await sportsCenter.load('inventory')
     const inventory = sportsCenter.inventory
@@ -30,14 +32,14 @@ export default class ProductsController {
     response.created({ product })
   }
 
-  public async update({ request, response }: HttpContextContract) {
+  public async update({ request, response, bouncer }: HttpContextContract) {
     const sportsCenterId = request.param('sportsCenterId') as number
     const productId = request.param('productId') as number
     const productPayload = await request.validate(UpdateProductValidator)
 
     const sportsCenter = await SportsCenter.findOrFail(sportsCenterId)
-    await sportsCenter.load('inventory')
-    const inventory = sportsCenter.inventory
+
+    await bouncer.authorize('manageSportsCenter', sportsCenter)
 
     const product = await Product.findOrFail(productId)
     const updatedProduct = await product.merge(productPayload).save()
@@ -45,9 +47,13 @@ export default class ProductsController {
     response.ok({ product: updatedProduct })
   }
 
-  public async destroy({ request, response }: HttpContextContract) {
+  public async destroy({ request, response, bouncer }: HttpContextContract) {
     const sportsCenterId = request.param('sportsCenterId') as number
     const productId = request.param('productId') as number
+
+    const sportsCenter = await SportsCenter.findOrFail(sportsCenterId)
+
+    await bouncer.authorize('manageSportsCenter', sportsCenter)
 
     const product = await Product.findOrFail(productId)
     await product.delete()

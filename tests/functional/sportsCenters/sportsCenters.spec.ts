@@ -1,8 +1,8 @@
 import Database from '@ioc:Adonis/Lucid/Database'
 import { test } from '@japa/runner'
 import AddressFactory from 'Database/factories/AddressFactory'
-import UserFactory from 'Database/factories/UserFactory'
 import SportsCenterFactory from 'Database/factories/SportsCenterFactory'
+import UserFactory from 'Database/factories/UserFactory'
 
 test.group('SportsCenter', (group) => {
   group.each.setup(async () => {
@@ -12,7 +12,7 @@ test.group('SportsCenter', (group) => {
 
   test('it should create a Sports Center', async ({ assert, client }) => {
     const { id } = await AddressFactory.create()
-    const user = await UserFactory.merge({ addressId: id }).create()
+    const user = await UserFactory.merge({ addressId: id, type: 'OWNER' }).create()
 
     const sportsCenterPayload = {
       name: 'JB',
@@ -30,7 +30,7 @@ test.group('SportsCenter', (group) => {
       neighborhood: 'portão',
     }
 
-    const response = await client.post('/sportsCenters').json(sportsCenterPayload)
+    const response = await client.post('/sportsCenters').json(sportsCenterPayload).loginAs(user)
 
     response.assertStatus(201)
     assert.exists(response.body().sportsCenter, 'Sports Center undefined')
@@ -42,9 +42,9 @@ test.group('SportsCenter', (group) => {
     assert.equal(response.body().sportsCenter.owner, user.id)
   })
 
-  test('it should update a SportsCenter', async ({ client, assert }) => {
+  test('it should update a Sports Center', async ({ client, assert }) => {
     const { id } = await AddressFactory.create()
-    const user = await UserFactory.merge({ addressId: id }).create()
+    const user = await UserFactory.merge({ addressId: id, type: 'OWNER' }).create()
     const address = await AddressFactory.create()
     const sportsCenter = await SportsCenterFactory.merge({
       addressId: address.id,
@@ -66,7 +66,10 @@ test.group('SportsCenter', (group) => {
       neighborhood: 'portão',
     }
 
-    const response = await client.put(`/sportsCenters/${sportsCenter.id}`).json(sportsCenterPayload)
+    const response = await client
+      .put(`/sportsCenters/${sportsCenter.id}`)
+      .json(sportsCenterPayload)
+      .loginAs(user)
 
     response.assertStatus(200)
     assert.exists(response.body().sportsCenter, 'Sports Center undefined')
@@ -87,14 +90,14 @@ test.group('SportsCenter', (group) => {
 
   test('it should delete a Sports Center', async ({ client, assert }) => {
     const { id } = await AddressFactory.create()
-    const user = await UserFactory.merge({ addressId: id }).create()
+    const user = await UserFactory.merge({ addressId: id, type: 'OWNER' }).create()
     const address = await AddressFactory.create()
     const sportsCenter = await SportsCenterFactory.merge({
       addressId: address.id,
       owner: user.id,
     }).create()
 
-    const response = await client.delete(`/sportsCenters/${sportsCenter.id}`).json({})
+    const response = await client.delete(`/sportsCenters/${sportsCenter.id}`).json({}).loginAs(user)
 
     response.assertStatus(200)
     assert.notExists(response.body().sportsCenter, 'Sports Center defined')

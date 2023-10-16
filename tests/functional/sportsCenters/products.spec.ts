@@ -14,7 +14,7 @@ test.group('SportsCenter', (group) => {
 
   test('it should create a product in inventory', async ({ client, assert }) => {
     const { id } = await AddressFactory.create()
-    const user = await UserFactory.merge({ addressId: id }).create()
+    const user = await UserFactory.merge({ addressId: id, type: 'OWNER' }).create()
     const address = await AddressFactory.create()
     const sportsCenter = await SportsCenterFactory.merge({
       addressId: address.id,
@@ -34,6 +34,7 @@ test.group('SportsCenter', (group) => {
     const response = await client
       .post(`/sportsCenters/${sportsCenter.id}/inventory`)
       .json(productPayload)
+      .loginAs(user)
 
     response.assertStatus(201)
     assert.exists(response.body().product, 'Product Undefined')
@@ -47,7 +48,7 @@ test.group('SportsCenter', (group) => {
 
   test('it should update a product', async ({ assert, client }) => {
     const { id } = await AddressFactory.create()
-    const user = await UserFactory.merge({ addressId: id }).create()
+    const user = await UserFactory.merge({ addressId: id, type: 'OWNER' }).create()
     const address = await AddressFactory.create()
     const sportsCenter = await SportsCenterFactory.merge({
       addressId: address.id,
@@ -65,6 +66,7 @@ test.group('SportsCenter', (group) => {
     const response = await client
       .put(`/sportsCenters/${sportsCenter.id}/inventory/${product.id}`)
       .json(productPayload)
+      .loginAs(user)
 
     response.assertStatus(200)
     assert.exists(response.body().product, 'Product Undefined')
@@ -76,9 +78,9 @@ test.group('SportsCenter', (group) => {
     assert.equal(response.body().product.description, product.description)
   })
 
-  test('it should delete a product', async ({ assert, client }) => {
+  test('it should delete a product', async ({ client }) => {
     const { id } = await AddressFactory.create()
-    const user = await UserFactory.merge({ addressId: id }).create()
+    const user = await UserFactory.merge({ addressId: id, type: 'OWNER' }).create()
     const address = await AddressFactory.create()
     const sportsCenter = await SportsCenterFactory.merge({
       addressId: address.id,
@@ -91,6 +93,7 @@ test.group('SportsCenter', (group) => {
     const response = await client
       .delete(`/sportsCenters/${sportsCenter.id}/inventory/${product.id}`)
       .json({})
+      .loginAs(user)
 
     response.assertStatus(200)
   })

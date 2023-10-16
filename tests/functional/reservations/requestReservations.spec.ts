@@ -32,8 +32,8 @@ test.group('Request Reservation', (group) => {
     const response = await client
       .post(`/sportsCenters/${sportsCenter.id}/sportsCourts/${sportsCourt.id}/requestReservations`)
       .json(requestReservationPayload)
+      .loginAs(user2)
 
-    console.log(response.body().requestReservation)
     response.assertStatus(201)
     assert.exists(response.body().requestReservation, 'Request Reservation undefined')
     assert.exists(response.body().requestReservation.id, 'ID Undefined')
@@ -44,7 +44,7 @@ test.group('Request Reservation', (group) => {
     assert.equal(response.body().requestReservation.amount, requestReservationPayload.amount)
     assert.equal(response.body().requestReservation.owner_id, user.id)
     assert.equal(response.body().requestReservation.sports_court_id, sportsCourt.id)
-    assert.equal(response.body().requestReservation.user_id, 2)
+    assert.equal(response.body().requestReservation.user_id, user2.id)
   })
 
   test('it should update a request Reservation', async ({ assert, client }) => {
@@ -72,6 +72,7 @@ test.group('Request Reservation', (group) => {
     const response = await client
       .put(`/requestReservations/${requestReservation.id}`)
       .json(requestReservationPayload)
+      .loginAs(user2)
 
     response.assertStatus(200)
     assert.exists(response.body().requestReservation, 'Request Reservation undefined')
@@ -103,7 +104,10 @@ test.group('Request Reservation', (group) => {
       sportsCourtId: sportsCourt.id,
     }).create()
 
-    const response = await client.delete(`/requestReservations/${requestReservation.id}`).json({})
+    const response = await client
+      .delete(`/requestReservations/${requestReservation.id}`)
+      .json({})
+      .loginAs(user2)
 
     response.assertStatus(200)
     assert.notExists(response.body().requestReservation, 'Request Reservation defined')
