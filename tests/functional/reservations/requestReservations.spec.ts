@@ -63,7 +63,6 @@ test.group('Request Reservation', (group) => {
     const requestReservationPayload = {
       startTime: '2023-10-17 18:00:00',
       endTime: '2023-10-17 19:00:00',
-      amount: '510',
     }
 
     const response = await client
@@ -74,7 +73,6 @@ test.group('Request Reservation', (group) => {
     response.assertStatus(200)
     assert.exists(response.body().requestReservation, 'Request Reservation undefined')
     assert.exists(response.body().requestReservation.id, 'ID Undefined')
-    assert.equal(response.body().requestReservation.amount, requestReservationPayload.amount)
     assert.equal(response.body().requestReservation.owner_id, user.id)
     assert.equal(response.body().requestReservation.sports_court_id, sportsCourt.id)
     assert.equal(response.body().requestReservation.user_id, user2.id)

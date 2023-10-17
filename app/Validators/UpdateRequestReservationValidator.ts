@@ -24,8 +24,8 @@ export default class UpdateRequestReservationValidator {
    *    ```
    */
   public schema = schema.create({
-    reservationTime: schema.string.optional(),
-    amount: schema.number.optional(),
+    startTime: schema.date({ format: 'yyyy-MM-dd HH:mm:ss' }),
+    endTime: schema.date({ format: 'yyyy-MM-dd HH:mm:ss' }),
   })
 
   /**
