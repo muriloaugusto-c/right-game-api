@@ -1,4 +1,5 @@
-import { schema, CustomMessages } from '@ioc:Adonis/Core/Validator'
+import { CustomMessages, schema } from '@ioc:Adonis/Core/Validator'
+
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 export default class CreateRequestReservationValidator {
@@ -24,8 +25,9 @@ export default class CreateRequestReservationValidator {
    *    ```
    */
   public schema = schema.create({
-    reservationTime: schema.string(),
-    amount: schema.number(),
+    startTime: schema.date({ format: 'yyyy-MM-dd HH:mm:ss' }),
+    endTime: schema.date({ format: 'yyyy-MM-dd HH:mm:ss' }),
+    amount: schema.string(),
   })
 
   /**

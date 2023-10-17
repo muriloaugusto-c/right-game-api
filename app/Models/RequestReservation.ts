@@ -1,19 +1,22 @@
-import { BaseModel, belongsTo, BelongsTo, column, HasOne, hasOne } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, belongsTo, BelongsTo, column, hasOne, HasOne } from '@ioc:Adonis/Lucid/Orm'
 import { DateTime } from 'luxon'
 
+import Reservation from './Reservation'
 import SportsCourt from './SportsCourt'
 import User from './User'
-import Reservation from './Reservation'
 
 export default class RequestReservation extends BaseModel {
   @column({ isPrimary: true })
   public id: number
 
   @column()
-  public reservationTime: string
+  public startTime: DateTime
 
   @column()
-  public amount: number
+  public endTime: DateTime
+
+  @column()
+  public amount: string
 
   @column()
   public status: 'PENDING' | 'ACCEPTED' | 'REJECTED'

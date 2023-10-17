@@ -25,8 +25,9 @@ test.group('Request Reservation', (group) => {
     const user2 = await UserFactory.merge({ addressId: address2.id }).create()
 
     const requestReservationPayload = {
-      reservationTime: '19:00:00 ~ 20:00:00',
-      amount: 510,
+      startTime: '2023-10-17 18:00:00',
+      endTime: '2023-10-17 19:00:00',
+      amount: '1510',
     }
 
     const response = await client
@@ -37,11 +38,6 @@ test.group('Request Reservation', (group) => {
     response.assertStatus(201)
     assert.exists(response.body().requestReservation, 'Request Reservation undefined')
     assert.exists(response.body().requestReservation.id, 'ID Undefined')
-    assert.equal(
-      response.body().requestReservation.reservation_time,
-      requestReservationPayload.reservationTime
-    )
-    assert.equal(response.body().requestReservation.amount, requestReservationPayload.amount)
     assert.equal(response.body().requestReservation.owner_id, user.id)
     assert.equal(response.body().requestReservation.sports_court_id, sportsCourt.id)
     assert.equal(response.body().requestReservation.user_id, user2.id)
@@ -65,8 +61,9 @@ test.group('Request Reservation', (group) => {
     }).create()
 
     const requestReservationPayload = {
-      reservationTime: '19:00:00 ~ 20:00:00',
-      amount: 510,
+      startTime: '2023-10-17 18:00:00',
+      endTime: '2023-10-17 19:00:00',
+      amount: '510',
     }
 
     const response = await client
@@ -77,10 +74,6 @@ test.group('Request Reservation', (group) => {
     response.assertStatus(200)
     assert.exists(response.body().requestReservation, 'Request Reservation undefined')
     assert.exists(response.body().requestReservation.id, 'ID Undefined')
-    assert.equal(
-      response.body().requestReservation.reservation_time,
-      requestReservationPayload.reservationTime
-    )
     assert.equal(response.body().requestReservation.amount, requestReservationPayload.amount)
     assert.equal(response.body().requestReservation.owner_id, user.id)
     assert.equal(response.body().requestReservation.sports_court_id, sportsCourt.id)

@@ -1,5 +1,6 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Address from 'App/Models/Address'
+import AuditLog from 'App/Models/AuditLog'
 import Inventory from 'App/Models/Inventory'
 import SportsCenter from 'App/Models/SportsCenter'
 import CreateAddressValidator from 'App/Validators/CreateAddressValidator'
@@ -8,16 +9,26 @@ import UpdateAdressValidator from 'App/Validators/UpdateAdressValidator'
 import UpdateSportsCenterValidator from 'App/Validators/UpdateSportsCenterValidator'
 
 export default class SportsCentersController {
+  private async auditLog(action: string, details: string, userId: number) {
+    await AuditLog.create({
+      action,
+      details,
+      userId,
+    })
+  }
+
   public async index({ request, response }: HttpContextContract) {
     const { text, ['sportsCenter']: sportsCenterId, owner } = request.qs()
 
     const sportsCenterQuery = this.filterByQueryString(text, sportsCenterId, owner)
-    const sportsCenter = await sportsCenterQuery
+    const sportsCenters = await sportsCenterQuery
 
-    return response.ok({ sportsCenter })
+    return response.ok({ sportsCenters })
   }
 
-  public async store({ request, response, bouncer }: HttpContextContract) {
+  public async store({ request, response, bouncer, auth }: HttpContextContract) {
+    await bouncer.authorize('createSportsCenter')
+
     const sportsCenterPayload = await request.validate(CreateSportsCenterValidator)
     const addressPayload = await request.validate(CreateAddressValidator)
 
@@ -25,16 +36,21 @@ export default class SportsCentersController {
     const sportsCenter = await SportsCenter.create(sportsCenterPayload)
     const inventory = await Inventory.create({ sportsCenterId: sportsCenter.id })
 
-    await bouncer.authorize('createSportsCenter')
-
     await address.related('sportsCenter').save(sportsCenter)
     await sportsCenter.merge({ addressId: address.id }).save()
     await sportsCenter.related('inventory').save(inventory)
 
+    const user = await auth.authenticate()
+    await this.auditLog(
+      'CREATE SPORTSCENTER',
+      `User ${user.name} created a new Sports Center: ${sportsCenter.name}.`,
+      user.id
+    )
+
     response.created({ sportsCenter })
   }
 
-  public async update({ request, response, bouncer }: HttpContextContract) {
+  public async update({ request, response, bouncer, auth }: HttpContextContract) {
     const id = request.param('sportsCenterId') as number
     const sportsCenterPayload = await request.validate(UpdateSportsCenterValidator)
     const addressPayload = await request.validate(UpdateAdressValidator)
@@ -50,16 +66,30 @@ export default class SportsCentersController {
     const address = await Address.findOrFail(addressId)
     const updatedAddress = await address.merge(addressPayload).save()
 
+    const user = await auth.authenticate()
+    await this.auditLog(
+      'UPDATE SPORTSCENTER',
+      `User ${user.name} update a Sports Center: ${sportsCenter.name}.`,
+      user.id
+    )
+
     response.ok({ sportsCenter: updatedSportsCenter, address: updatedAddress })
   }
 
-  public async destroy({ request, response, bouncer }: HttpContextContract) {
+  public async destroy({ request, response, bouncer, auth }: HttpContextContract) {
     const id = request.param('sportsCenterId') as number
 
     const sportsCenter = await SportsCenter.findOrFail(id)
     const address = await Address.findOrFail(sportsCenter.addressId)
 
     await bouncer.authorize('manageSportsCenter', sportsCenter)
+
+    const user = await auth.authenticate()
+    await this.auditLog(
+      'DELETE SPORTSCENTER',
+      `User ${user.name} delete a Sports Center: ${sportsCenter.name}.`,
+      user.id
+    )
 
     await sportsCenter.delete()
     await address.delete()

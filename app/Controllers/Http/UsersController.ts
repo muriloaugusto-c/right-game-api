@@ -1,5 +1,6 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Address from 'App/Models/Address'
+import AuditLog from 'App/Models/AuditLog'
 import User from 'App/Models/User'
 import CreateAddressValidator from 'App/Validators/CreateAddressValidator'
 import CreateUserValidator from 'App/Validators/CreateUserValidator'
@@ -7,7 +8,16 @@ import UpdateAdressValidator from 'App/Validators/UpdateAdressValidator'
 import UpdateUserValidator from 'App/Validators/UpdateUserValidator'
 
 export default class UsersController {
-  public async index({ request, response }: HttpContextContract) {
+  private async auditLog(action: string, details: string, userId: number) {
+    await AuditLog.create({
+      action,
+      details,
+      userId,
+    })
+  }
+
+  public async index({ request, response, bouncer }: HttpContextContract) {
+    await bouncer.authorize('getUsers')
     const { text, ['user']: userId } = request.qs()
 
     const usersQuery = this.filterByQueryString(text, userId)
@@ -25,6 +35,12 @@ export default class UsersController {
 
     await address.related('user').save(user)
     await user.merge({ addressId: address.id }).save()
+
+    await this.auditLog(
+      'CREATE USER',
+      `User ${user.name} with e-mail: ${user.email} created in right-game.`,
+      user.id
+    )
 
     response.created({ user, address })
   }
@@ -45,19 +61,29 @@ export default class UsersController {
     const address = await Address.findOrFail(addressId)
     const updatedAddress = await address.merge(addressPayload).save()
 
+    await this.auditLog('UPDATE USER', `User ${user.name} updated their profile.`, user.id)
+
     response.ok({ user: updatedUser, address: updatedAddress })
   }
 
-  public async destroy({ request, response, bouncer }: HttpContextContract) {
+  public async destroy({ request, response, bouncer, auth }: HttpContextContract) {
     const id = request.param('userId') as number
 
     const user = await User.findOrFail(id)
     const address = await Address.findOrFail(user.addressId)
 
+    const loggedUser = await auth.authenticate()
     await bouncer.authorize('deleteUser', user)
 
+    await AuditLog.query().where('user_id', user.id).delete()
     await user.delete()
     await address.delete()
+
+    await this.auditLog(
+      'DELETE USER',
+      `User ${loggedUser.name} deleted the user ${user.name}.`,
+      loggedUser.id
+    )
 
     response.ok({})
   }

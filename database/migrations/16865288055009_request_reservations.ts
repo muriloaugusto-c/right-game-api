@@ -6,8 +6,9 @@ export default class extends BaseSchema {
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id').unsigned().primary()
-      table.string('reservation_time').notNullable()
-      table.integer('amount').notNullable()
+      table.timestamp('start_time').notNullable()
+      table.timestamp('end_time').notNullable()
+      table.decimal('amount', 10, 2).notNullable()
       table.enum('status', ['PENDING', 'ACCEPTED', 'REJECTED']).defaultTo('PENDING').notNullable()
 
       // RELACIONAMENTO ENTRE A TABELA USERS

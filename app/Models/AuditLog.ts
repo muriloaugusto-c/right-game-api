@@ -13,8 +13,11 @@ export default class AuditLog extends BaseModel {
   @column()
   public details: string
 
+  @column()
+  public userId: number
+
   @belongsTo(() => User, {})
-  public userId: BelongsTo<typeof User>
+  public user: BelongsTo<typeof User>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

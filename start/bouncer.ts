@@ -8,7 +8,6 @@
 import Bouncer from '@ioc:Adonis/Addons/Bouncer'
 import RequestReservation from 'App/Models/RequestReservation'
 import SportsCenter from 'App/Models/SportsCenter'
-
 import User from 'App/Models/User'
 
 /*
@@ -37,7 +36,10 @@ export const { actions } = Bouncer.define('updateUser', (user: User, updatedUser
   return user.id === updatedUser.id
 })
   .define('deleteUser', (user: User, deletedUser: User) => {
-    return user.id === deletedUser.id
+    return user.id === deletedUser.id || user.type === 'ADMIN'
+  })
+  .define('getUsers', (user: User) => {
+    return user.type === 'ADMIN'
   })
   .define('makeOnwer', (user: User) => {
     return user.type === 'ADMIN'

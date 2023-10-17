@@ -21,7 +21,7 @@
 import Route from '@ioc:Adonis/Core/Route'
 
 // ROTAS USERS
-Route.get('/users', 'UsersController.index')
+Route.get('/users', 'UsersController.index').middleware('auth')
 Route.post('/users', 'UsersController.store')
 Route.put('/users/:userId', 'UsersController.update').middleware('auth')
 Route.put('/users/:userId/owner', 'UsersController.makeOwner').middleware('auth')
@@ -92,6 +92,16 @@ Route.post(
   'RatingsController.store'
 )
 //Route.put('')
+
+//ROTAS REPORTS
+
+Route.get(
+  '/users/reports/reservation-history',
+  'UsersReportsController.reservationHistory'
+).middleware('auth')
+Route.get('/users/reports/calculateTotalSpent', 'UsersReportsController.totalSpent').middleware(
+  'auth'
+)
 
 //ROTAS SESSIONS
 Route.post('/sessions', 'SessionsController.store')

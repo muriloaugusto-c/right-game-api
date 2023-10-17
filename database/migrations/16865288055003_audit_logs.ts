@@ -11,7 +11,7 @@ export default class extends BaseSchema {
       table.string('details').notNullable()
 
       // RELACIONAMENTO ENTRE A TABELA USERS
-      table.integer('user_id').notNullable().unsigned().references('users.id')
+      table.integer('user_id').notNullable().unsigned().references('users.id').onDelete('CASCADE')
 
       table.timestamp('created_at', { useTz: true })
       table.timestamp('updated_at', { useTz: true })

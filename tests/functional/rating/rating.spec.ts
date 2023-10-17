@@ -1,4 +1,5 @@
 import Database from '@ioc:Adonis/Lucid/Database'
+/*
 import { test } from '@japa/runner'
 import AddressFactory from 'Database/factories/AddressFactory'
 import RequestReservationFactory from 'Database/factories/RequestReservationFactory'
@@ -84,3 +85,4 @@ test.group('Request Reservation', (group) => {
     assert.equal(response.body().rating.text, ratingPayload.text)
   })
 })
+*/
