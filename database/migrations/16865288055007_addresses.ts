@@ -12,6 +12,14 @@ export default class extends BaseSchema {
       table.string('state').notNullable()
       table.string('city').notNullable()
       table.string('neighborhood').notNullable()
+
+      table.integer('user_id').unsigned().references('users.id').onDelete('CASCADE')
+      table
+        .integer('sports_center_id')
+        .unsigned()
+        .references('sports_centers.id')
+        .onDelete('CASCADE')
+
       table.timestamp('created_at', { useTz: true })
       table.timestamp('updated_at', { useTz: true })
     })

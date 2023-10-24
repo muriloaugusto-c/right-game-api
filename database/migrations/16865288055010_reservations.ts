@@ -9,6 +9,9 @@ export default class extends BaseSchema {
 
       // RELACIONAMENTO ENTRE A TABELA REQUESTRESERVATIONS
       table.integer('request_reservation_id').unsigned().references('request_reservations.id')
+      table
+        .enum('status', ['CONFIRMED', 'PROGRESS', 'COMPLETED', 'CANCELED'])
+        .defaultTo('CONFIRMED')
 
       table.timestamp('created_at', { useTz: true })
       table.timestamp('updated_at', { useTz: true })

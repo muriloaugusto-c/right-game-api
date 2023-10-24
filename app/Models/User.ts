@@ -2,17 +2,18 @@ import Hash from '@ioc:Adonis/Core/Hash'
 import {
   BaseModel,
   beforeSave,
-  belongsTo,
-  BelongsTo,
   column,
   hasMany,
   HasMany,
+  hasOne,
+  HasOne,
   ModelQueryBuilderContract,
   scope,
 } from '@ioc:Adonis/Lucid/Orm'
 import { DateTime } from 'luxon'
 
 import Address from './Address'
+import Rating from './Rating'
 import RequestReservation from './RequestReservation'
 
 type Builder = ModelQueryBuilderContract<typeof User>
@@ -28,7 +29,7 @@ export default class User extends BaseModel {
   public email: string
 
   @column()
-  public doc: number
+  public doc: string
 
   @column({ serializeAs: null })
   public password: string
@@ -42,14 +43,14 @@ export default class User extends BaseModel {
   @column()
   public type: 'USER' | 'OWNER' | 'ADMIN'
 
-  @column()
-  public addressId: number
-
-  @belongsTo(() => Address, { foreignKey: 'addressId' })
-  public address: BelongsTo<typeof Address>
+  @hasOne(() => Address, { foreignKey: 'userId' })
+  public address: HasOne<typeof Address>
 
   @hasMany(() => RequestReservation, {})
   public requestReservation: HasMany<typeof RequestReservation>
+
+  @hasMany(() => Rating, {})
+  public rating: HasMany<typeof Rating>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

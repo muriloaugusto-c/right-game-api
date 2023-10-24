@@ -1,8 +1,8 @@
-import { BaseModel, column, hasOne, HasOne } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, belongsTo, BelongsTo, column } from '@ioc:Adonis/Lucid/Orm'
 import { DateTime } from 'luxon'
 
-import User from './User'
 import SportsCenter from './SportsCenter'
+import User from './User'
 
 export default class Address extends BaseModel {
   @column({ isPrimary: true })
@@ -26,13 +26,19 @@ export default class Address extends BaseModel {
   @column()
   public neighborhood: string
 
-  @hasOne(() => User, { foreignKey: 'addressId' })
-  public user: HasOne<typeof User>
+  @column()
+  public userId: number
 
-  @hasOne(() => SportsCenter, {
-    foreignKey: 'addressId',
+  @column()
+  public sportsCenterId: number
+
+  @belongsTo(() => User, { foreignKey: 'userId' })
+  public user: BelongsTo<typeof User>
+
+  @belongsTo(() => SportsCenter, {
+    foreignKey: 'sportsCenterId',
   })
-  public sportsCenter: HasOne<typeof SportsCenter>
+  public sportsCenter: BelongsTo<typeof SportsCenter>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

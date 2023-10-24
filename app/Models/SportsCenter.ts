@@ -49,11 +49,8 @@ export default class SportsCenter extends BaseModel {
   })
   public ownerUser: BelongsTo<typeof User>
 
-  @column()
-  public addressId: number
-
-  @belongsTo(() => Address, {})
-  public address: BelongsTo<typeof Address>
+  @hasOne(() => Address, {})
+  public address: HasOne<typeof Address>
 
   @hasMany(() => SportsCourt, {})
   public sportsCourt: HasMany<typeof SportsCourt>

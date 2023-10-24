@@ -14,9 +14,6 @@ export default class extends BaseSchema {
       table.string('phone_number').notNullable()
       table.enum('type', ['USER', 'OWNER', 'ADMIN']).defaultTo('USER')
 
-      // RELACIONAMENTO ENTRE A TABELA USERS
-      table.integer('address_id').references('addresses_id')
-
       table.timestamp('created_at', { useTz: true })
       table.timestamp('updated_at', { useTz: true })
     })

@@ -1,4 +1,4 @@
-import { BaseModel, belongsTo, BelongsTo, column, hasOne, HasOne } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, belongsTo, BelongsTo, column } from '@ioc:Adonis/Lucid/Orm'
 import { DateTime } from 'luxon'
 
 import Reservation from './Reservation'
@@ -12,8 +12,8 @@ export default class Rating extends BaseModel {
   @column()
   public text: string
 
-  @hasOne(() => User, {})
-  public user: HasOne<typeof User>
+  @belongsTo(() => User, {})
+  public user: BelongsTo<typeof User>
 
   @column()
   public sportsCourtId: number

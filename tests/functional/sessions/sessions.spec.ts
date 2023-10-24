@@ -37,7 +37,7 @@ test.group('Session', (group) => {
     response.assertStatus(201)
     assert.exists(response.body().token, 'Token undefined')
     assert.equal(response.body().user.id, user.id)
-  }).pin
+  })
 
   test('it should return 400 when credentials are not provided', async ({ assert, client }) => {
     const response = await client.post('/sessions').json({})

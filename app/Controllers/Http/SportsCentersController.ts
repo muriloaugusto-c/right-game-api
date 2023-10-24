@@ -33,11 +33,10 @@ export default class SportsCentersController {
     const addressPayload = await request.validate(CreateAddressValidator)
 
     const address = await Address.create(addressPayload)
-    const sportsCenter = await SportsCenter.create(sportsCenterPayload)
+    const sportsCenter = await address.related('sportsCenter').create(sportsCenterPayload)
+
     const inventory = await Inventory.create({ sportsCenterId: sportsCenter.id })
 
-    await address.related('sportsCenter').save(sportsCenter)
-    await sportsCenter.merge({ addressId: address.id }).save()
     await sportsCenter.related('inventory').save(inventory)
 
     const user = await auth.authenticate()

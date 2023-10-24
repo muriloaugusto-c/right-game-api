@@ -60,6 +60,7 @@
     "@adonisjs/core": "^5.8.0",
     "@adonisjs/lucid": "^18.4.0",
     "@adonisjs/repl": "^3.1.0",
+    "cpf-cnpj-validator": "^1.0.3",
     "faker": "^6.6.6",
     "luxon": "^3.3.0",
     "pg": "^8.11.3",

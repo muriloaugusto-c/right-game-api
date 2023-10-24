@@ -17,9 +17,6 @@ export default class extends BaseSchema {
       // RELACIONAMENTO ENTRE A TABELA USERS
       table.integer('owner').unsigned().references('users.id').onDelete('CASCADE')
 
-      // RELACIONAMENTO ENTRE A TABELA ADDRESSES
-      table.integer('address_id').unsigned().references('addresses.id')
-
       table.timestamp('created_at', { useTz: true })
       table.timestamp('updated_at', { useTz: true })
     })
