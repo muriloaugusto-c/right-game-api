@@ -30,7 +30,6 @@ export default class CreateSportsCenterValidator {
     contactNumber: schema.string(),
     parking: schema.string(),
     steakhouse: schema.string(),
-    owner: schema.number(),
   })
 
   /**
@@ -44,5 +43,12 @@ export default class CreateSportsCenterValidator {
    * }
    *
    */
-  public messages: CustomMessages = {}
+  public messages: CustomMessages = {
+    'name.required': 'Name is required',
+    'photoUrls.required': 'PhotoUrls is required',
+    'events.required': 'Events is required',
+    'contactNumber.required': 'Contact Number is required',
+    'parking.required': 'Parking is required',
+    'steakhouse.required': 'Steakhouse is required',
+  }
 }

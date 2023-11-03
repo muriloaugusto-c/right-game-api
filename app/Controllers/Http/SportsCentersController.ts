@@ -1,12 +1,14 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import Address from 'App/Models/Address'
+
 import AuditLog from 'App/Models/AuditLog'
-import Inventory from 'App/Models/Inventory'
 import SportsCenter from 'App/Models/SportsCenter'
+import CrudSportsCentersService from 'App/Services/SportsCenters/CrudSportsCentersService'
 import CreateAddressValidator from 'App/Validators/CreateAddressValidator'
 import CreateSportsCenterValidator from 'App/Validators/CreateSportsCenterValidator'
 import UpdateAdressValidator from 'App/Validators/UpdateAdressValidator'
 import UpdateSportsCenterValidator from 'App/Validators/UpdateSportsCenterValidator'
+
+const service = new CrudSportsCentersService()
 
 export default class SportsCentersController {
   private async auditLog(action: string, details: string, userId: number) {
@@ -18,116 +20,91 @@ export default class SportsCentersController {
   }
 
   public async index({ request, response }: HttpContextContract) {
-    const { text, ['sportsCenter']: sportsCenterId, owner } = request.qs()
+    try {
+      const { text, ['sportsCenter']: sportsCenterId, owner } = request.qs()
 
-    const sportsCenterQuery = this.filterByQueryString(text, sportsCenterId, owner)
-    const sportsCenters = await sportsCenterQuery
+      const sportsCenters = await service.filterByQueryString(text, sportsCenterId, owner)
 
-    return response.ok({ sportsCenters })
+      return response.ok({ sportsCenters })
+    } catch (error) {
+      response.status(error.status).send({ code: error.code, message: error.message })
+    }
   }
 
   public async store({ request, response, bouncer, auth }: HttpContextContract) {
-    await bouncer.authorize('createSportsCenter')
+    try {
+      await bouncer.authorize('createSportsCenter')
+      const user = await auth.authenticate()
 
-    const sportsCenterPayload = await request.validate(CreateSportsCenterValidator)
-    const addressPayload = await request.validate(CreateAddressValidator)
+      const sportsCenterPayload = await request.validate(CreateSportsCenterValidator)
+      const addressPayload = await request.validate(CreateAddressValidator)
 
-    const address = await Address.create(addressPayload)
-    const sportsCenter = await address.related('sportsCenter').create(sportsCenterPayload)
+      const { sportsCenter, address } = await service.createSportsCenter(
+        sportsCenterPayload,
+        addressPayload,
+        user
+      )
 
-    const inventory = await Inventory.create({ sportsCenterId: sportsCenter.id })
+      await this.auditLog(
+        'CREATE SPORTSCENTER',
+        `User ${user.name} created a new Sports Center: ${sportsCenter.name}.`,
+        user.id
+      )
 
-    await sportsCenter.related('inventory').save(inventory)
-
-    const user = await auth.authenticate()
-    await this.auditLog(
-      'CREATE SPORTSCENTER',
-      `User ${user.name} created a new Sports Center: ${sportsCenter.name}.`,
-      user.id
-    )
-
-    response.created({ sportsCenter })
+      response.created({ sportsCenter, address })
+    } catch (error) {
+      if (error.messages)
+        response.status(error.status).send({ code: error.code, message: error.messages })
+      else response.status(error.status).send({ code: error.code, message: error.message })
+    }
   }
 
   public async update({ request, response, bouncer, auth }: HttpContextContract) {
-    const id = request.param('sportsCenterId') as number
-    const sportsCenterPayload = await request.validate(UpdateSportsCenterValidator)
-    const addressPayload = await request.validate(UpdateAdressValidator)
+    try {
+      const user = await auth.authenticate()
+      const id = request.param('sportsCenterId') as number
 
-    const sportsCenter = await SportsCenter.findOrFail(id)
+      await bouncer.authorize('manageSportsCenter', await SportsCenter.findOrFail(id))
 
-    await bouncer.authorize('manageSportsCenter', sportsCenter)
+      const sportsCenterPayload = await request.validate(UpdateSportsCenterValidator)
+      const addressPayload = await request.validate(UpdateAdressValidator)
 
-    const updatedSportsCenter = await sportsCenter.merge(sportsCenterPayload).save()
+      const { sportsCenter, address } = await service.updateSportsCenter(
+        id,
+        sportsCenterPayload,
+        addressPayload
+      )
 
-    const addressId = sportsCenter.addressId
+      await this.auditLog(
+        'UPDATE SPORTSCENTER',
+        `User ${user.name} update a Sports Center: ${sportsCenter.name}.`,
+        user.id
+      )
 
-    const address = await Address.findOrFail(addressId)
-    const updatedAddress = await address.merge(addressPayload).save()
-
-    const user = await auth.authenticate()
-    await this.auditLog(
-      'UPDATE SPORTSCENTER',
-      `User ${user.name} update a Sports Center: ${sportsCenter.name}.`,
-      user.id
-    )
-
-    response.ok({ sportsCenter: updatedSportsCenter, address: updatedAddress })
+      response.ok({ sportsCenter, address })
+    } catch (error) {
+      response.status(error.status).send({ code: error.code, message: error.message })
+    }
   }
 
   public async destroy({ request, response, bouncer, auth }: HttpContextContract) {
-    const id = request.param('sportsCenterId') as number
+    try {
+      const id = request.param('sportsCenterId') as number
 
-    const sportsCenter = await SportsCenter.findOrFail(id)
-    const address = await Address.findOrFail(sportsCenter.addressId)
+      await bouncer.authorize('manageSportsCenter', await SportsCenter.findOrFail(id))
 
-    await bouncer.authorize('manageSportsCenter', sportsCenter)
+      const sportsCenterName = await service.deleteSportsCenter(id)
 
-    const user = await auth.authenticate()
-    await this.auditLog(
-      'DELETE SPORTSCENTER',
-      `User ${user.name} delete a Sports Center: ${sportsCenter.name}.`,
-      user.id
-    )
+      const user = await auth.authenticate()
+      await this.auditLog(
+        'DELETE SPORTSCENTER',
+        `User ${user.name} delete a Sports Center: ${sportsCenterName}.`,
+        user.id
+      )
 
-    await sportsCenter.delete()
-    await address.delete()
-
-    response.ok({})
-  }
-
-  private filterByQueryString(text: string, sportsCenterId: number, owner: string) {
-    if (owner) return this.filterByOwner(owner)
-    else if (sportsCenterId) return this.filterById(sportsCenterId)
-    else if (text) return this.filterbyText(text)
-    else return this.all()
-  }
-
-  private all() {
-    return SportsCenter.query().preload('address').preload('ownerUser').preload('inventory')
-  }
-
-  private filterById(sportsCenterId: number) {
-    return SportsCenter.query()
-      .preload('address')
-      .preload('ownerUser')
-      .preload('inventory')
-      .withScopes((scope) => scope.withId(sportsCenterId))
-  }
-
-  private filterbyText(text: string) {
-    return SportsCenter.query()
-      .preload('address')
-      .preload('ownerUser')
-      .preload('inventory')
-      .withScopes((scope) => scope.withText(text))
-  }
-
-  private filterByOwner(owner: string) {
-    return SportsCenter.query()
-      .preload('address')
-      .preload('ownerUser')
-      .preload('inventory')
-      .withScopes((scope) => scope.withOwner(owner))
+      response.ok({})
+    } catch (error) {
+      response.status(error.status).send({ code: error.code, message: error.message })
+    }
   }
 }

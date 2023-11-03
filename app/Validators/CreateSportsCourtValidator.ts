@@ -42,5 +42,11 @@ export default class CreateSportsCourtValidator {
    * }
    *
    */
-  public messages: CustomMessages = {}
+  public messages: CustomMessages = {
+    'name.required': 'Name is required',
+    'modality.required': 'PhotoUrls is required',
+    'description.required': 'Events is required',
+    'size.required': 'Contact Number is required',
+    'photoUrls.required': 'Parking is required',
+  }
 }

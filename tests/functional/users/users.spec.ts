@@ -1,6 +1,5 @@
 import Database from '@ioc:Adonis/Lucid/Database'
 import { test } from '@japa/runner'
-import AddressFactory from 'Database/factories/AddressFactory'
 import UserFactory from 'Database/factories/UserFactory'
 
 test.group('User', (group) => {
@@ -46,7 +45,9 @@ test.group('User', (group) => {
 
   test('it should return 422 when data is not provided', async ({ client, assert }) => {
     const response = await client.post('/users').json({})
+
     response.assertStatus(422)
+
     assert.equal(response.body().code, 'E_VALIDATION_FAILURE')
   })
 
@@ -88,6 +89,7 @@ test.group('User', (group) => {
       city: 'curitiba',
       neighborhood: 'portão',
     })
+
     response.assertStatus(422)
     assert.equal(response.body().code, 'E_VALIDATION_FAILURE')
   })
@@ -111,6 +113,7 @@ test.group('User', (group) => {
     }
 
     const response = await client.post('/users').json(userPayload)
+
     response.assertStatus(409)
     assert.equal(response.body().code, 'BAD_REQUEST')
     assert.equal(response.body().message, 'Email is already in use')
@@ -142,8 +145,7 @@ test.group('User', (group) => {
   })
 
   test('it should update an user', async ({ client, assert }) => {
-    const user = await UserFactory.create()
-    await AddressFactory.merge({ userId: user.id }).create()
+    const user = await UserFactory.with('address', 1).create()
 
     const userPayload = {
       name: 'Murilo',
@@ -172,8 +174,7 @@ test.group('User', (group) => {
   })
 
   test('it should return 404 when provided an unexisting user for update', async ({ client }) => {
-    const user = await UserFactory.create()
-    await AddressFactory.merge({ userId: user.id }).create()
+    const user = await UserFactory.with('address', 1).create()
 
     const response = await client.put(`/users/41234`).json({}).loginAs(user)
 
@@ -209,9 +210,8 @@ test.group('User', (group) => {
   })
 
   test('it should delete an user', async ({ client }) => {
-    const user = await UserFactory.create()
-    await AddressFactory.merge({ userId: user.id }).create()
-    const admin = await UserFactory.merge({ type: 'ADMIN' }).create()
+    const user = await UserFactory.with('address', 1).create()
+    const admin = await UserFactory.apply('admin').create()
 
     const response = await client.delete(`/users/${user.id}`).json({}).loginAs(admin)
 
@@ -239,7 +239,7 @@ test.group('User', (group) => {
 
   test('it should make an owner user', async ({ assert, client }) => {
     const user = await UserFactory.create()
-    const userAdmin = await UserFactory.merge({ type: 'ADMIN' }).create()
+    const userAdmin = await UserFactory.apply('admin').create()
 
     const response = await client.put(`/users/${user.id}/owner`).json({}).loginAs(userAdmin)
 
@@ -249,8 +249,7 @@ test.group('User', (group) => {
   })
 
   test('it should return 403 when make an owner user is not admin', async ({ client }) => {
-    const user = await UserFactory.create()
-    await AddressFactory.merge({ userId: user.id }).create()
+    const user = await UserFactory.with('address', 1).create()
     const user2 = await UserFactory.create()
 
     const response = await client.put(`/users/${user.id}/owner`).json({}).loginAs(user2)
@@ -262,11 +261,9 @@ test.group('User', (group) => {
     assert,
     client,
   }) => {
-    const user = await UserFactory.create()
-    await AddressFactory.merge({ userId: user.id }).create()
-    const user2 = await UserFactory.create()
-    await AddressFactory.merge({ userId: user.id }).create()
-    const admin = await UserFactory.merge({ type: 'ADMIN' }).create()
+    const user = await UserFactory.with('address', 1).create()
+    const user2 = await UserFactory.with('address', 1).create()
+    const admin = await UserFactory.apply('admin').create()
 
     const response = await client.get('/users').json({}).loginAs(admin)
 
@@ -279,23 +276,20 @@ test.group('User', (group) => {
   })
 
   test('it should return 403 when user is not admin', async ({ client }) => {
-    const user = await UserFactory.create()
-    await AddressFactory.merge({ userId: user.id }).create()
-    const user2 = await UserFactory.create()
-    await AddressFactory.merge({ userId: user2.id }).create()
+    const user = await UserFactory.with('address', 1).create()
 
     const response = await client.get('/users').json({}).loginAs(user)
+
     response.assertStatus(403)
   })
 
   test('it should return user by user id', async ({ assert, client }) => {
-    const user = await UserFactory.create()
-    await AddressFactory.merge({ userId: user.id }).create()
-    const user2 = await UserFactory.create()
-    await AddressFactory.merge({ userId: user2.id }).create()
-    const admin = await UserFactory.merge({ type: 'ADMIN' }).create()
+    const user = await UserFactory.with('address', 1).create()
+    await UserFactory.with('address', 1).create()
+    const admin = await UserFactory.apply('admin').create()
 
     const response = await client.get(`/users?user=${user.id}`).json({}).loginAs(admin)
+
     response.assertStatus(200)
     assert.exists(response.body().users, 'User undefined')
     assert.equal(response.body().users[0].id, user.id)
@@ -303,12 +297,12 @@ test.group('User', (group) => {
   })
 
   test('it should return user by user name', async ({ assert, client }) => {
-    const user = await UserFactory.create()
-    await AddressFactory.merge({ userId: user.id }).create()
-    const user2 = await UserFactory.create()
-    await AddressFactory.merge({ userId: user2.id }).create()
-    const admin = await UserFactory.merge({ type: 'ADMIN' }).create()
+    const user = await UserFactory.with('address', 1).create()
+    await UserFactory.with('address', 1).create()
+    const admin = await UserFactory.apply('admin').create()
+
     const response = await client.get(`/users?text=${user.name}`).json({}).loginAs(admin)
+
     response.assertStatus(200)
     assert.exists(response.body().users, 'User undefined')
     assert.equal(response.body().users[0].id, user.id)
@@ -316,13 +310,11 @@ test.group('User', (group) => {
   })
 
   test('it should return no user by user name not found', async ({ assert, client }) => {
-    const user = await UserFactory.create()
-    await AddressFactory.merge({ userId: user.id }).create()
-    const user2 = await UserFactory.create()
-    await AddressFactory.merge({ userId: user2.id }).create()
-    const admin = await UserFactory.merge({ type: 'ADMIN' }).create()
+    await UserFactory.with('address', 1).createMany(5)
+    const admin = await UserFactory.apply('admin').create()
 
     const response = await client.get(`/users?text=pedro`).json({}).loginAs(admin)
+
     response.assertStatus(200)
     assert.empty(response.body().users)
   })

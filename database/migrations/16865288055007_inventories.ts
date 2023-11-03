@@ -10,7 +10,6 @@ export default class extends BaseSchema {
       // RELACIONAMENTO ENTRE A TABELA SPORTSCENTERS
       table
         .integer('sports_center_id')
-        .notNullable()
         .unsigned()
         .references('sports_centers.id')
         .onDelete('CASCADE')

@@ -1,10 +1,11 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import AuditLog from 'App/Models/AuditLog'
-import Inventory from 'App/Models/Inventory'
-import Product from 'App/Models/Product'
 import SportsCenter from 'App/Models/SportsCenter'
-import ProductValidator from 'App/Validators/ProductValidator'
+import CrudProductsService from 'App/Services/Products/CrudProductsService'
+import CreateProductValidator from 'App/Validators/CreateProductValidator'
 import UpdateProductValidator from 'App/Validators/UpdateProductValidator'
+
+const service = new CrudProductsService()
 
 export default class ProductsController {
   private async auditLog(action: string, details: string, userId: number) {
@@ -16,94 +17,89 @@ export default class ProductsController {
   }
 
   public async index({ request, response }: HttpContextContract) {
-    const { text } = request.qs()
-    const sportsCenterId = request.param('sportsCenterId') as number
+    try {
+      const { text } = request.qs()
+      const sportsCenterId = request.param('sportsCenterId') as number
 
-    const productsQuery = this.filterByQueryString(text, sportsCenterId)
-    const products = await productsQuery
+      const products = await service.filterByQueryString(text, sportsCenterId)
 
-    return response.ok({ products })
+      return response.ok({ products })
+    } catch (error) {
+      response.status(error.status).send({ code: error.code, message: error.message })
+    }
   }
 
   public async store({ request, response, bouncer, auth }: HttpContextContract) {
-    const id = request.param('sportsCenterId') as number
-    const productPayload = await request.validate(ProductValidator)
+    try {
+      const user = await auth.authenticate()
+      const id = request.param('sportsCenterId') as number
 
-    const sportsCenter = await SportsCenter.findOrFail(id)
+      const sportsCenter = await SportsCenter.findOrFail(id)
 
-    await bouncer.authorize('manageSportsCenter', sportsCenter)
+      await bouncer.authorize('manageSportsCenter', sportsCenter)
+      const productPayload = await request.validate(CreateProductValidator)
 
-    await sportsCenter.load('inventory')
-    const inventory = sportsCenter.inventory
+      const product = await service.createProduct(sportsCenter, productPayload)
 
-    const product = await inventory.related('products').create(productPayload)
+      await this.auditLog(
+        'ADD PRODUCT',
+        `User ${user.name} add a Product: ${product.name} at Sports Center: ${sportsCenter.name}.`,
+        user.id
+      )
 
-    const user = await auth.authenticate()
-    await this.auditLog(
-      'ADD PRODUCT',
-      `User ${user.name} add a Product: ${product.name} at Sports Center: ${sportsCenter.name}.`,
-      user.id
-    )
-
-    response.created({ product })
+      response.created({ product })
+    } catch (error) {
+      if (error.messages)
+        response.status(error.status).send({ code: error.code, message: error.messages })
+      else response.status(error.status).send({ code: error.code, message: error.message })
+    }
   }
 
   public async update({ request, response, bouncer, auth }: HttpContextContract) {
-    const sportsCenterId = request.param('sportsCenterId') as number
-    const productId = request.param('productId') as number
-    const productPayload = await request.validate(UpdateProductValidator)
+    try {
+      const user = await auth.authenticate()
+      const sportsCenterId = request.param('sportsCenterId') as number
+      const productId = request.param('productId') as number
 
-    const sportsCenter = await SportsCenter.findOrFail(sportsCenterId)
+      const sportsCenter = await SportsCenter.findOrFail(sportsCenterId)
+      await bouncer.authorize('manageSportsCenter', sportsCenter)
 
-    await bouncer.authorize('manageSportsCenter', sportsCenter)
+      const productPayload = await request.validate(UpdateProductValidator)
 
-    const product = await Product.findOrFail(productId)
-    const updatedProduct = await product.merge(productPayload).save()
+      const product = await service.updateProduct(productId, productPayload)
 
-    const user = await auth.authenticate()
-    await this.auditLog(
-      'UPDATE PRODUCT',
-      `User ${user.name} update a Product: ${product.name} at Sports Center: ${sportsCenter.name}.`,
-      user.id
-    )
+      await this.auditLog(
+        'UPDATE PRODUCT',
+        `User ${user.name} update a Product: ${product.name} at Sports Center: ${sportsCenter.name}.`,
+        user.id
+      )
 
-    response.ok({ product: updatedProduct })
+      response.ok({ product })
+    } catch (error) {
+      response.status(error.status).send({ code: error.code, message: error.message })
+    }
   }
 
   public async destroy({ request, response, bouncer, auth }: HttpContextContract) {
-    const sportsCenterId = request.param('sportsCenterId') as number
-    const productId = request.param('productId') as number
+    try {
+      const user = await auth.authenticate()
+      const sportsCenterId = request.param('sportsCenterId') as number
+      const productId = request.param('productId') as number
 
-    const sportsCenter = await SportsCenter.findOrFail(sportsCenterId)
+      const sportsCenter = await SportsCenter.findOrFail(sportsCenterId)
+      await bouncer.authorize('manageSportsCenter', sportsCenter)
 
-    await bouncer.authorize('manageSportsCenter', sportsCenter)
+      const productName = await service.deleteProduct(productId)
 
-    const product = await Product.findOrFail(productId)
+      await this.auditLog(
+        'DELETE PRODUCT',
+        `User ${user.name} delete a Product: ${productName} at Sports Center: ${sportsCenter.name}.`,
+        user.id
+      )
 
-    const user = await auth.authenticate()
-    await this.auditLog(
-      'DELETE PRODUCT',
-      `User ${user.name} delete a Product: ${product.name} at Sports Center: ${sportsCenter.name}.`,
-      user.id
-    )
-
-    await product.delete()
-
-    response.ok({})
-  }
-
-  private filterByQueryString(text: string, sportsCenterId: number) {
-    if (text && sportsCenterId) return this.filterByText(text, sportsCenterId)
-    else return this.all(sportsCenterId)
-  }
-
-  private all(sportsCenterId: number) {
-    return Inventory.query().preload('products').where('sports_center_id', sportsCenterId)
-  }
-
-  private filterByText(text: string, sportsCenterId: number) {
-    return Product.query()
-      .preload('inventory')
-      .withScopes((scope) => scope.withText(text, sportsCenterId))
+      response.ok({})
+    } catch (error) {
+      response.status(error.status).send({ code: error.code, message: error.message })
+    }
   }
 }

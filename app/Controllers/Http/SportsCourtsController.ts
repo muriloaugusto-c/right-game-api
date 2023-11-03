@@ -1,9 +1,11 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import AuditLog from 'App/Models/AuditLog'
 import SportsCenter from 'App/Models/SportsCenter'
-import SportsCourt from 'App/Models/SportsCourt'
+import CrudSportsCourtsService from 'App/Services/SportsCourts/CrudSportsCourts'
 import CreateSportsCourtValidator from 'App/Validators/CreateSportsCourtValidator'
 import UptadeSportsCourtValidator from 'App/Validators/UptadeSportsCourtValidator'
+
+const service = new CrudSportsCourtsService()
 
 export default class SportsCourtsController {
   private async auditLog(action: string, details: string, userId: number) {
@@ -15,93 +17,87 @@ export default class SportsCourtsController {
   }
 
   public async index({ request, response }: HttpContextContract) {
-    const { text, ['sportsCourt']: sportsCourtId } = request.qs()
-    const sportsCenterId = request.param('sportsCenterId') as number
+    try {
+      const { text, ['sportsCourt']: sportsCourtId } = request.qs()
+      const sportsCenterId = request.param('sportsCenterId') as number
 
-    const sportsCourtQuery = this.filterByQueryString(text, sportsCenterId, sportsCourtId)
-    const sportsCourts = await sportsCourtQuery
+      const sportsCourts = await service.filterByQueryString(text, sportsCenterId, sportsCourtId)
 
-    return response.ok({ sportsCourts })
+      return response.ok({ sportsCourts })
+    } catch (error) {
+      response.status(error.status).send({ code: error.code, message: error.message })
+    }
   }
 
   public async store({ request, response, bouncer, auth }: HttpContextContract) {
-    const sportsCenterId = request.param('sportsCenterId') as number
-    const sportsCourtPayload = await request.validate(CreateSportsCourtValidator)
+    try {
+      const user = await auth.authenticate()
+      const sportsCenterId = request.param('sportsCenterId') as number
+      const sportsCenter = await SportsCenter.findOrFail(sportsCenterId)
 
-    const sportsCenter = await SportsCenter.findOrFail(sportsCenterId)
+      await bouncer.authorize('manageSportsCenter', sportsCenter)
+      const sportsCourtPayload = await request.validate(CreateSportsCourtValidator)
 
-    await bouncer.authorize('manageSportsCenter', sportsCenter)
+      const sportsCourt = await service.createSportsCourts(sportsCenter, sportsCourtPayload)
 
-    const sportsCourt = await sportsCenter.related('sportsCourt').create(sportsCourtPayload)
+      await this.auditLog(
+        'CREATE SPORTSCOURT',
+        `User ${user.name} create a Sports Court: ${sportsCourt.name} at Sports Center: ${sportsCenter.name}.`,
+        user.id
+      )
 
-    const user = await auth.authenticate()
-    await this.auditLog(
-      'CREATE SPORTSCOURT',
-      `User ${user.name} create a Sports Court: ${sportsCourt.name} at Sports Center: ${sportsCenter.name}.`,
-      user.id
-    )
-
-    response.created({ sportsCourt })
+      response.created({ sportsCourt })
+    } catch (error) {
+      if (error.messages)
+        response.status(error.status).send({ code: error.code, message: error.messages })
+      else response.status(error.status).send({ code: error.code, message: error.message })
+    }
   }
 
   public async update({ request, response, bouncer, auth }: HttpContextContract) {
-    const sportsCenterId = request.param('sportsCenterId') as number
-    const sportsCourtId = request.param('sportsCourtId') as number
-    const sportsCourtPayload = await request.validate(UptadeSportsCourtValidator)
+    try {
+      const user = await auth.authenticate()
+      const sportsCenterId = request.param('sportsCenterId') as number
+      const sportsCourtId = request.param('sportsCourtId') as number
+      const sportsCenter = await SportsCenter.findOrFail(sportsCenterId)
 
-    const sportsCenter = await SportsCenter.findOrFail(sportsCenterId)
+      await bouncer.authorize('manageSportsCenter', sportsCenter)
 
-    await bouncer.authorize('manageSportsCenter', sportsCenter)
+      const sportsCourtPayload = await request.validate(UptadeSportsCourtValidator)
+      const sportsCourt = await service.updateSportsCourts(sportsCourtId, sportsCourtPayload)
 
-    const sportsCourt = await SportsCourt.findOrFail(sportsCourtId)
+      await this.auditLog(
+        'UPDATE SPORTSCOURT',
+        `User ${user.name} update a Sports Court: ${sportsCourt.name} at Sports Center: ${sportsCenter.name}.`,
+        user.id
+      )
 
-    const updatedSportsCourt = await sportsCourt.merge(sportsCourtPayload).save()
-
-    const user = await auth.authenticate()
-    await this.auditLog(
-      'UPDATE SPORTSCOURT',
-      `User ${user.name} update a Sports Court: ${sportsCourt.name} at Sports Center: ${sportsCenter.name}.`,
-      user.id
-    )
-
-    response.ok({ sportsCourt: updatedSportsCourt })
+      response.ok({ sportsCourt })
+    } catch (error) {
+      response.status(error.status).send({ code: error.code, message: error.message })
+    }
   }
 
   public async destroy({ request, response, bouncer, auth }: HttpContextContract) {
-    const sportsCenterId = request.param('sportsCenterId') as number
-    const sportsCourtId = request.param('sportsCourtId') as number
+    try {
+      const user = await auth.authenticate()
+      const sportsCenterId = request.param('sportsCenterId') as number
+      const sportsCourtId = request.param('sportsCourtId') as number
+      const sportsCenter = await SportsCenter.findOrFail(sportsCenterId)
 
-    const sportsCenter = await SportsCenter.findOrFail(sportsCenterId)
+      await bouncer.authorize('manageSportsCenter', sportsCenter)
 
-    await bouncer.authorize('manageSportsCenter', sportsCenter)
-    const sportsCourt = await SportsCourt.findOrFail(sportsCourtId)
+      const sportsCourtName = await service.deleteSportsCourts(sportsCourtId)
 
-    const user = await auth.authenticate()
-    await this.auditLog(
-      'DELETE SPORTSCOURT',
-      `User ${user.name} delete a Sports Court: ${sportsCourt.name} at Sports Center: ${sportsCenter.name}.`,
-      user.id
-    )
+      await this.auditLog(
+        'DELETE SPORTSCOURT',
+        `User ${user.name} delete a Sports Court: ${sportsCourtName} at Sports Center: ${sportsCenter.name}.`,
+        user.id
+      )
 
-    await sportsCourt.delete()
-    response.ok({})
-  }
-
-  private filterByQueryString(text: string, sportsCenterId: number, sportsCourtId: number) {
-    if (text && sportsCenterId) return this.filterByText(text, sportsCenterId)
-    else if (sportsCourtId) return this.filterById(sportsCourtId)
-    else return this.all(sportsCenterId)
-  }
-
-  private all(sportsCenterId: number) {
-    return SportsCourt.query().where('sports_center_id', sportsCenterId)
-  }
-
-  private filterById(sportsCourtId: number) {
-    return SportsCourt.query().where('id', sportsCourtId)
-  }
-
-  private filterByText(text: string, sportsCenterId: number) {
-    return SportsCourt.query().withScopes((scope) => scope.withText(text, sportsCenterId))
+      response.ok({})
+    } catch (error) {
+      response.status(error.status).send({ code: error.code, message: error.message })
+    }
   }
 }

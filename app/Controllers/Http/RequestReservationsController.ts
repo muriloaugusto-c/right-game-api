@@ -1,11 +1,11 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import AuditLog from 'App/Models/AuditLog'
 import RequestReservation from 'App/Models/RequestReservation'
-import SportsCenter from 'App/Models/SportsCenter'
-import SportsCourt from 'App/Models/SportsCourt'
-import User from 'App/Models/User'
+import CrudRequestReservationsService from 'App/Services/RequestReservations/CrudRequestReservationsService'
 import CreateRequestReservationValidator from 'App/Validators/CreateRequestReservationValidator'
 import UpdateRequestReservationValidator from 'App/Validators/UpdateRequestReservationValidator'
+
+const service = new CrudRequestReservationsService()
 
 export default class RequestReservationsController {
   private async auditLog(action: string, details: string, userId: number) {
@@ -17,111 +17,150 @@ export default class RequestReservationsController {
   }
 
   public async index({ request, response }: HttpContextContract) {
-    const ownerId = request.param('ownerId') as number
+    try {
+      const ownerId = request.param('ownerId') as number
 
-    const requestReservations = await RequestReservation.query()
-      .preload('sportsCourt', (query) => {
-        query.select('name')
-      })
-      .where('owner_id', ownerId)
+      const requestReservations = await RequestReservation.query()
+        .preload('sportsCourt', (query) => {
+          query.select('name')
+        })
+        .where('owner_id', ownerId)
 
-    response.ok({ requestReservation: requestReservations })
+      response.ok({ requestReservation: requestReservations })
+    } catch (error) {
+      response.status(error.status).send({ code: error.code, message: error.message })
+    }
   }
 
   public async store({ request, response, bouncer, auth }: HttpContextContract) {
-    const sportsCenterId = request.param('sportsCenterId') as number
-    const sportsCourtId = request.param('sportsCourtId') as number
-    const requestReservationPayload = await request.validate(CreateRequestReservationValidator)
+    try {
+      await bouncer.authorize('createReservationRequest')
+      const user = await auth.authenticate()
 
-    const user = await auth.authenticate()
-    await bouncer.authorize('createReservationRequest')
+      const sportsCenterId = request.param('sportsCenterId') as number
+      const sportsCourtId = request.param('sportsCourtId') as number
 
-    const sportsCenter = await SportsCenter.findOrFail(sportsCenterId)
-    const sportsCourt = await SportsCourt.findOrFail(sportsCourtId)
-    const owner = await User.findOrFail(sportsCenter.owner)
+      await bouncer.authorize('createReservationRequest')
 
-    const requestReservation = await RequestReservation.create(requestReservationPayload)
-    await requestReservation.related('owner').associate(owner)
-    await requestReservation.related('sportsCourt').associate(sportsCourt)
-    await requestReservation.related('user').associate(user)
+      const requestReservationPayload = await request.validate(CreateRequestReservationValidator)
 
-    await this.auditLog(
-      'CREATE REQUEST_RESERVATION',
-      `User ${user.name} create a reservation request on the court ${sportsCourt.name} at sports center: ${sportsCenter.name}`,
-      user.id
-    )
-    response.created({ requestReservation })
+      const { requestReservation, sportsCenterName, sportsCourtName } =
+        await service.createRequestReservation(
+          sportsCourtId,
+          sportsCenterId,
+          user,
+          requestReservationPayload
+        )
+      await await this.auditLog(
+        'CREATE REQUEST_RESERVATION',
+        `User ${user.name} create a reservation request on the court ${sportsCourtName} at sports center: ${sportsCenterName}`,
+        user.id
+      )
+      response.created({ requestReservation })
+    } catch (error) {
+      if (error.messages)
+        response.status(error.status).send({ code: error.code, message: error.messages })
+      else response.status(error.status).send({ code: error.code, message: error.message })
+    }
   }
 
   public async update({ request, response, bouncer, auth }: HttpContextContract) {
-    const requestReservationId = request.param('requestReservationId') as number
-    const requestReservationPayload = await request.validate(UpdateRequestReservationValidator)
+    try {
+      const user = await auth.authenticate()
+      const requestReservationId = request.param('requestReservationId') as number
 
-    const requestReservation = await RequestReservation.findOrFail(requestReservationId)
-    await bouncer.authorize('manageReservationRequest', requestReservation)
+      await bouncer.authorize(
+        'manageReservationRequest',
+        await RequestReservation.findOrFail(requestReservationId)
+      )
 
-    const user = await auth.authenticate()
-    await this.auditLog(
-      'UPDATE REQUEST_RESERVATION',
-      `User ${user.name} update a reservation request in reservation: ${requestReservation.id} `,
-      user.id
-    )
+      const requestReservationPayload = await request.validate(UpdateRequestReservationValidator)
 
-    const updateRequestReservation = await requestReservation.merge(requestReservationPayload)
-    response.ok({ requestReservation: updateRequestReservation })
+      const requestReservation = await service.updateRequestReservation(
+        requestReservationId,
+        requestReservationPayload
+      )
+
+      await this.auditLog(
+        'UPDATE REQUEST_RESERVATION',
+        `User ${user.name} update a reservation request in reservation: ${requestReservation.id} `,
+        user.id
+      )
+      response.ok({ requestReservation })
+    } catch (error) {
+      response.status(error.status).send({ code: error.code, message: error.message })
+    }
   }
 
   public async delete({ request, response, bouncer, auth }: HttpContextContract) {
-    const requestReservationId = request.param('requestReservationId') as number
+    try {
+      const requestReservationId = request.param('requestReservationId') as number
 
-    const requestReservation = await RequestReservation.findOrFail(requestReservationId)
-    await bouncer.authorize('manageReservationRequest', requestReservation)
+      await bouncer.authorize(
+        'manageReservationRequest',
+        await RequestReservation.findOrFail(requestReservationId)
+      )
 
-    const user = await auth.authenticate()
-    await this.auditLog(
-      'DELETE REQUEST_RESERVATION',
-      `User ${user.name} delete a reservation request in reservation: ${requestReservation.id} `,
-      user.id
-    )
+      await service.deleteRequestReservation(requestReservationId)
 
-    await requestReservation.delete()
-    response.ok({})
+      const user = await auth.authenticate()
+      await this.auditLog(
+        'DELETE REQUEST_RESERVATION',
+        `User ${user.name} delete a reservation request in reservation: ${requestReservationId} `,
+        user.id
+      )
+
+      response.ok({})
+    } catch (error) {
+      response.status(error.status).send({ code: error.code, message: error.message })
+    }
   }
 
   public async accept({ request, response, bouncer, auth }: HttpContextContract) {
-    const requestReservationId = request.param('requestReservationId') as number
+    try {
+      const requestReservationId = request.param('requestReservationId') as number
 
-    const requestReservation = await RequestReservation.findOrFail(requestReservationId)
-    await bouncer.authorize('acceptOrDenyReservationRequest', requestReservation)
+      await bouncer.authorize(
+        'acceptOrDenyReservationRequest',
+        await RequestReservation.findOrFail(requestReservationId)
+      )
 
-    await requestReservation.merge({ status: 'ACCEPTED' }).save()
-    const reservation = await requestReservation.related('reservation').create({})
+      const requestReservation = await service.acceptRequestReservation(requestReservationId)
 
-    const user = await auth.authenticate()
-    await this.auditLog(
-      'ACCEPT REQUEST_RESERVATION',
-      `User ${user.name} accepted a reservation request in reservation: ${requestReservation.id} `,
-      user.id
-    )
+      const user = await auth.authenticate()
+      await this.auditLog(
+        'ACCEPT REQUEST_RESERVATION',
+        `User ${user.name} accepted a reservation request in reservation: ${requestReservation.id} `,
+        user.id
+      )
 
-    response.ok({ requestReservation, reservation })
+      response.ok({ requestReservation })
+    } catch (error) {
+      response.status(error.status).send({ code: error.code, message: error.message })
+    }
   }
 
   public async reject({ request, response, bouncer, auth }: HttpContextContract) {
-    const requestReservationId = request.param('requestReservationId') as number
+    try {
+      const requestReservationId = request.param('requestReservationId') as number
 
-    const requestReservation = await RequestReservation.findOrFail(requestReservationId)
-    await bouncer.authorize('acceptOrDenyReservationRequest', requestReservation)
+      await bouncer.authorize(
+        'acceptOrDenyReservationRequest',
+        await RequestReservation.findOrFail(requestReservationId)
+      )
 
-    await requestReservation.merge({ status: 'REJECTED' }).save()
+      const requestReservation = await service.rejectRequestReservation(requestReservationId)
 
-    const user = await auth.authenticate()
-    await this.auditLog(
-      'REJECT REQUEST_RESERVATION',
-      `User ${user.name} rejected a reservation request in reservation: ${requestReservation.id} `,
-      user.id
-    )
+      const user = await auth.authenticate()
+      await this.auditLog(
+        'REJECT REQUEST_RESERVATION',
+        `User ${user.name} rejected a reservation request in reservation: ${requestReservation.id} `,
+        user.id
+      )
 
-    response.ok({ requestReservation })
+      response.ok({ requestReservation })
+    } catch (error) {
+      response.status(error.status).send({ code: error.code, message: error.message })
+    }
   }
 }

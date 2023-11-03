@@ -1,7 +1,7 @@
 import { schema, CustomMessages } from '@ioc:Adonis/Core/Validator'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
-export default class ProductValidator {
+export default class CreateProductValidator {
   constructor(protected ctx: HttpContextContract) {}
 
   /*
@@ -42,5 +42,11 @@ export default class ProductValidator {
    * }
    *
    */
-  public messages: CustomMessages = {}
+  public messages: CustomMessages = {
+    'name.required': 'Name is required',
+    'value.required': 'Value is required',
+    'quantity.required': 'Quantity is required',
+    'description.required': 'Description is required',
+    'photoUrls.required': 'Photo Urls is required',
+  }
 }

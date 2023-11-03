@@ -49,13 +49,13 @@ export default class ExceptionHandler extends HttpExceptionHandler {
         message: 'user unauthorized, please sign-in',
         status: 401,
       })
-    else if (error.code === '23505') {
+    else if (error.code === '23505')
       return ctx.response.status(409).send({
         code: 'DUPLICATE_ENTRY',
         message: error.message,
         status: 409,
       })
-    }
+
     return super.handle(error, ctx)
   }
 }

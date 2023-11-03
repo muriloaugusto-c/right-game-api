@@ -44,5 +44,12 @@ export default class CreateAddressValidator {
    * }
    *
    */
-  public messages: CustomMessages = {}
+  public messages: CustomMessages = {
+    'street.required': 'Street is required',
+    'streetNumber.required': 'Street Number is required',
+    'zipCode.required': 'Zip Code is required',
+    'state.required': 'State is required',
+    'city.required': 'City is required',
+    'neighborhood.required': 'Neighborhood Urls is required',
+  }
 }

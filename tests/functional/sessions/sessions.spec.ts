@@ -1,6 +1,5 @@
 import Database from '@ioc:Adonis/Lucid/Database'
 import { test } from '@japa/runner'
-import AddressFactory from 'Database/factories/AddressFactory'
 import UserFactory from 'Database/factories/UserFactory'
 
 test.group('Session', (group) => {
@@ -11,8 +10,7 @@ test.group('Session', (group) => {
 
   test('it should authenticate an user', async ({ assert, client }) => {
     const plainPassword = 'test'
-    const { id } = await AddressFactory.create()
-    const user = await UserFactory.merge({ addressId: id, password: plainPassword }).create()
+    const user = await UserFactory.merge({ password: plainPassword }).create()
 
     const response = await client.post('/sessions').json({
       email: user.email,
@@ -26,8 +24,7 @@ test.group('Session', (group) => {
 
   test('it should return an api token when session is created', async ({ assert, client }) => {
     const plainPassword = 'test'
-    const { id } = await AddressFactory.create()
-    const user = await UserFactory.merge({ addressId: id, password: plainPassword }).create()
+    const user = await UserFactory.merge({ password: plainPassword }).create()
 
     const response = await client.post('/sessions').json({
       email: user.email,
@@ -47,8 +44,7 @@ test.group('Session', (group) => {
   })
 
   test('it should return 400 when credentials are invalid', async ({ assert, client }) => {
-    const { id } = await AddressFactory.create()
-    const { email } = await UserFactory.merge({ addressId: id }).create()
+    const { email } = await UserFactory.create()
     const response = await client.post('/sessions').json({
       email,
       password: 'teste1234',
@@ -61,8 +57,7 @@ test.group('Session', (group) => {
 
   test('it should return 400 when credentials are invalid', async ({ assert, client }) => {
     const plainPassword = '123456'
-    const { id } = await AddressFactory.create()
-    await UserFactory.merge({ addressId: id, password: plainPassword }).create()
+    await UserFactory.merge({ password: plainPassword }).create()
     const response = await client.post('/sessions').json({
       email: 'test@test.com',
       password: plainPassword,

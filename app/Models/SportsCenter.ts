@@ -55,7 +55,7 @@ export default class SportsCenter extends BaseModel {
   @hasMany(() => SportsCourt, {})
   public sportsCourt: HasMany<typeof SportsCourt>
 
-  @hasOne(() => Inventory, {})
+  @hasOne(() => Inventory, { foreignKey: 'sportsCenterId' })
   public inventory: HasOne<typeof Inventory>
 
   @column.dateTime({ autoCreate: true })

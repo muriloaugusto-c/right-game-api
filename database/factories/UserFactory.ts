@@ -1,7 +1,9 @@
-import { cpf } from 'cpf-cnpj-validator'
 import Factory from '@ioc:Adonis/Lucid/Factory'
 import User from 'App/Models/User'
+import { cpf } from 'cpf-cnpj-validator'
 import { DateTime } from 'luxon'
+
+import AddressFactory from './AddressFactory'
 
 export default Factory.define(User, ({ faker }) => {
   return {
@@ -12,4 +14,8 @@ export default Factory.define(User, ({ faker }) => {
     birthday: DateTime.fromJSDate(faker.date.anytime()),
     phoneNumber: faker.phone.number('+55 ## ##### ####'),
   }
-}).build()
+})
+  .relation('address', () => AddressFactory)
+  .state('owner', (user) => (user.type = 'OWNER'))
+  .state('admin', (user) => (user.type = 'ADMIN'))
+  .build()

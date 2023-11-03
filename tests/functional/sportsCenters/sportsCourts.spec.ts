@@ -1,6 +1,5 @@
 import Database from '@ioc:Adonis/Lucid/Database'
 import { test } from '@japa/runner'
-import AddressFactory from 'Database/factories/AddressFactory'
 import SportsCenterFactory from 'Database/factories/SportsCenterFactory'
 import SportsCourtFactory from 'Database/factories/SportsCourtFactory'
 import UserFactory from 'Database/factories/UserFactory'
@@ -12,13 +11,10 @@ test.group('SportsCourts', (group) => {
   })
 
   test('it should create a Sports Court', async ({ assert, client }) => {
-    const { id } = await AddressFactory.create()
-    const user = await UserFactory.merge({ addressId: id, type: 'OWNER' }).create()
-    const address = await AddressFactory.create()
-    const sportsCenter = await SportsCenterFactory.merge({
-      addressId: address.id,
-      owner: user.id,
-    }).create()
+    const user = await UserFactory.merge({ type: 'OWNER' }).with('address', 1).create()
+    const sportsCenter = await SportsCenterFactory.merge({ owner: user.id })
+      .with('address', 1)
+      .create()
 
     const sportsCourtPayload = {
       name: 'Quadra A',
@@ -44,13 +40,10 @@ test.group('SportsCourts', (group) => {
   })
 
   test('it should return 403 when user is not owner', async ({ client }) => {
-    const { id } = await AddressFactory.create()
-    const user = await UserFactory.merge({ addressId: id }).create()
-    const address = await AddressFactory.create()
-    const sportsCenter = await SportsCenterFactory.merge({
-      addressId: address.id,
-      owner: user.id,
-    }).create()
+    const user = await UserFactory.with('address', 1).create()
+    const sportsCenter = await SportsCenterFactory.merge({ owner: user.id })
+      .with('address', 1)
+      .create()
 
     const sportsCourtPayload = {
       name: 'Quadra A',
@@ -69,31 +62,25 @@ test.group('SportsCourts', (group) => {
   })
 
   test('it should return 422 when data is not provided', async ({ assert, client }) => {
-    const { id } = await AddressFactory.create()
-    const user = await UserFactory.merge({ addressId: id, type: 'OWNER' }).create()
-    const address = await AddressFactory.create()
-    const sportsCenter = await SportsCenterFactory.merge({
-      addressId: address.id,
-      owner: user.id,
-    }).create()
+    const user = await UserFactory.merge({ type: 'OWNER' }).with('address', 1).create()
+    const sportsCenter = await SportsCenterFactory.merge({ owner: user.id })
+      .with('address', 1)
+      .create()
 
     const response = await client
       .post(`/sportsCenters/${sportsCenter.id}/sportsCourts`)
       .json({})
       .loginAs(user)
 
-    assert.equal(response.body().code, 'BAD_REQUEST')
+    assert.equal(response.body().code, 'E_VALIDATION_FAILURE')
     response.assertStatus(422)
   })
 
   test('it should update a Sports Court', async ({ assert, client }) => {
-    const { id } = await AddressFactory.create()
-    const user = await UserFactory.merge({ addressId: id, type: 'OWNER' }).create()
-    const address = await AddressFactory.create()
-    const sportsCenter = await SportsCenterFactory.merge({
-      addressId: address.id,
-      owner: user.id,
-    }).create()
+    const user = await UserFactory.merge({ type: 'OWNER' }).with('address', 1).create()
+    const sportsCenter = await SportsCenterFactory.merge({ owner: user.id })
+      .with('address', 1)
+      .create()
     const sportsCourt = await SportsCourtFactory.merge({ sportsCenterId: sportsCenter.id }).create()
 
     const sportsCourtPayload = {
@@ -119,32 +106,25 @@ test.group('SportsCourts', (group) => {
   test('it should return 404 when provided an unexisting sports court for update', async ({
     client,
   }) => {
-    const { id } = await AddressFactory.create()
-    const user = await UserFactory.merge({ addressId: id, type: 'OWNER' }).create()
-    const address = await AddressFactory.create()
-    const sportsCenter = await SportsCenterFactory.merge({
-      addressId: address.id,
-      owner: user.id,
-    }).create()
+    const user = await UserFactory.merge({ type: 'OWNER' }).with('address', 1).create()
+    const sportsCenter = await SportsCenterFactory.merge({ owner: user.id })
+      .with('address', 1)
+      .create()
 
     const response = await client
-      .put(`/sportsCenters/${sportsCenter.id}/sportsCourts/4`)
+      .put(`/sportsCenters/${sportsCenter.id}/sportsCourts/3`)
       .json({})
       .loginAs(user)
-
     response.assertStatus(404)
   })
 
   test('it should return 403 when the user is not the owner of the updated sports courts', async ({
     client,
   }) => {
-    const { id } = await AddressFactory.create()
-    const user = await UserFactory.merge({ addressId: id, type: 'OWNER' }).create()
-    const address = await AddressFactory.create()
-    const sportsCenter = await SportsCenterFactory.merge({
-      addressId: address.id,
-      owner: user.id,
-    }).create()
+    const user = await UserFactory.merge({ type: 'OWNER' }).with('address', 1).create()
+    const sportsCenter = await SportsCenterFactory.merge({ owner: user.id })
+      .with('address', 1)
+      .create()
     const sportsCourt = await SportsCourtFactory.merge({ sportsCenterId: sportsCenter.id }).create()
     const owner = await UserFactory.merge({ type: 'OWNER' }).create()
 
@@ -156,13 +136,10 @@ test.group('SportsCourts', (group) => {
   })
 
   test('it should delete a Sports Court', async ({ client }) => {
-    const { id } = await AddressFactory.create()
-    const user = await UserFactory.merge({ addressId: id, type: 'OWNER' }).create()
-    const address = await AddressFactory.create()
-    const sportsCenter = await SportsCenterFactory.merge({
-      addressId: address.id,
-      owner: user.id,
-    }).create()
+    const user = await UserFactory.merge({ type: 'OWNER' }).with('address', 1).create()
+    const sportsCenter = await SportsCenterFactory.merge({ owner: user.id })
+      .with('address', 1)
+      .create()
     const sportsCourt = await SportsCourtFactory.merge({ sportsCenterId: sportsCenter.id }).create()
 
     const response = await client
@@ -176,13 +153,10 @@ test.group('SportsCourts', (group) => {
   test('it should return 404 when provided an unexisting sports court for delete', async ({
     client,
   }) => {
-    const { id } = await AddressFactory.create()
-    const user = await UserFactory.merge({ addressId: id, type: 'OWNER' }).create()
-    const address = await AddressFactory.create()
-    const sportsCenter = await SportsCenterFactory.merge({
-      addressId: address.id,
-      owner: user.id,
-    }).create()
+    const user = await UserFactory.merge({ type: 'OWNER' }).with('address', 1).create()
+    const sportsCenter = await SportsCenterFactory.merge({ owner: user.id })
+      .with('address', 1)
+      .create()
 
     const response = await client
       .delete(`/sportsCenters/${sportsCenter.id}/sportsCourts/5`)
@@ -195,14 +169,11 @@ test.group('SportsCourts', (group) => {
   test('it should return 403 when the user is not the owner of the sports court', async ({
     client,
   }) => {
-    const { id } = await AddressFactory.create()
-    const user = await UserFactory.merge({ addressId: id, type: 'OWNER' }).create()
+    const user = await UserFactory.merge({ type: 'OWNER' }).with('address', 1).create()
     const owner = await UserFactory.merge({ type: 'OWNER' }).create()
-    const address = await AddressFactory.create()
-    const sportsCenter = await SportsCenterFactory.merge({
-      addressId: address.id,
-      owner: user.id,
-    }).create()
+    const sportsCenter = await SportsCenterFactory.merge({ owner: user.id })
+      .with('address', 1)
+      .create()
     const sportsCourt = await SportsCourtFactory.merge({ sportsCenterId: sportsCenter.id }).create()
 
     const response = await client
@@ -217,13 +188,10 @@ test.group('SportsCourts', (group) => {
     assert,
     client,
   }) => {
-    const { id } = await AddressFactory.create()
-    const user = await UserFactory.merge({ addressId: id, type: 'OWNER' }).create()
-    const address = await AddressFactory.create()
-    const sportsCenter = await SportsCenterFactory.merge({
-      addressId: address.id,
-      owner: user.id,
-    }).create()
+    const user = await UserFactory.merge({ type: 'OWNER' }).with('address', 1).create()
+    const sportsCenter = await SportsCenterFactory.merge({ owner: user.id })
+      .with('address', 1)
+      .create()
     const sportsCourt = await SportsCourtFactory.merge({ sportsCenterId: sportsCenter.id }).create()
     const sportsCourt2 = await SportsCourtFactory.merge({
       sportsCenterId: sportsCenter.id,
@@ -243,13 +211,10 @@ test.group('SportsCourts', (group) => {
     assert,
     client,
   }) => {
-    const { id } = await AddressFactory.create()
-    const user = await UserFactory.merge({ addressId: id, type: 'OWNER' }).create()
-    const address = await AddressFactory.create()
-    const sportsCenter = await SportsCenterFactory.merge({
-      addressId: address.id,
-      owner: user.id,
-    }).create()
+    const user = await UserFactory.merge({ type: 'OWNER' }).with('address', 1).create()
+    const sportsCenter = await SportsCenterFactory.merge({ owner: user.id })
+      .with('address', 1)
+      .create()
     const sportsCourt = await SportsCourtFactory.merge({ sportsCenterId: sportsCenter.id }).create()
     const sportsCourt2 = await SportsCourtFactory.merge({
       sportsCenterId: sportsCenter.id,
@@ -269,13 +234,10 @@ test.group('SportsCourts', (group) => {
     assert,
     client,
   }) => {
-    const { id } = await AddressFactory.create()
-    const user = await UserFactory.merge({ addressId: id, type: 'OWNER' }).create()
-    const address = await AddressFactory.create()
-    const sportsCenter = await SportsCenterFactory.merge({
-      addressId: address.id,
-      owner: user.id,
-    }).create()
+    const user = await UserFactory.merge({ type: 'OWNER' }).with('address', 1).create()
+    const sportsCenter = await SportsCenterFactory.merge({ owner: user.id })
+      .with('address', 1)
+      .create()
     const sportsCourt = await SportsCourtFactory.merge({ sportsCenterId: sportsCenter.id }).create()
     await SportsCourtFactory.merge({
       sportsCenterId: sportsCenter.id,
@@ -295,13 +257,10 @@ test.group('SportsCourts', (group) => {
     assert,
     client,
   }) => {
-    const { id } = await AddressFactory.create()
-    const user = await UserFactory.merge({ addressId: id, type: 'OWNER' }).create()
-    const address = await AddressFactory.create()
-    const sportsCenter = await SportsCenterFactory.merge({
-      addressId: address.id,
-      owner: user.id,
-    }).create()
+    const user = await UserFactory.merge({ type: 'OWNER' }).with('address', 1).create()
+    const sportsCenter = await SportsCenterFactory.merge({ owner: user.id })
+      .with('address', 1)
+      .create()
     const sportsCourt = await SportsCourtFactory.merge({ sportsCenterId: sportsCenter.id }).create()
     await SportsCourtFactory.merge({
       sportsCenterId: sportsCenter.id,
@@ -319,13 +278,10 @@ test.group('SportsCourts', (group) => {
   })
 
   test('it should return all sports courts at sports center by id', async ({ assert, client }) => {
-    const { id } = await AddressFactory.create()
-    const user = await UserFactory.merge({ addressId: id, type: 'OWNER' }).create()
-    const address = await AddressFactory.create()
-    const sportsCenter = await SportsCenterFactory.merge({
-      addressId: address.id,
-      owner: user.id,
-    }).create()
+    const user = await UserFactory.merge({ type: 'OWNER' }).with('address', 1).create()
+    const sportsCenter = await SportsCenterFactory.merge({ owner: user.id })
+      .with('address', 1)
+      .create()
     const sportsCourt = await SportsCourtFactory.merge({ sportsCenterId: sportsCenter.id }).create()
     await SportsCourtFactory.merge({
       sportsCenterId: sportsCenter.id,

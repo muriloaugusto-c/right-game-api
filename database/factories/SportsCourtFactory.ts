@@ -1,5 +1,7 @@
-import SportsCourt from 'App/Models/SportsCourt'
 import Factory from '@ioc:Adonis/Lucid/Factory'
+import SportsCourt from 'App/Models/SportsCourt'
+
+import SportsCenterFactory from './SportsCenterFactory'
 
 export default Factory.define(SportsCourt, ({ faker }) => {
   return {
@@ -9,4 +11,6 @@ export default Factory.define(SportsCourt, ({ faker }) => {
     size: faker.lorem.word(),
     photoUrls: faker.internet.url(),
   }
-}).build()
+})
+  .relation('sportsCenter', () => SportsCenterFactory)
+  .build()

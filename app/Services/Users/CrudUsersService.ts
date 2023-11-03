@@ -1,5 +1,6 @@
-import User from 'App/Models/User'
 import Address from 'App/Models/Address'
+import User from 'App/Models/User'
+
 import DocValidatorService from './DocValidatorService'
 import DuplicateService from './DuplicateService'
 
@@ -19,11 +20,11 @@ export default class CrudUsersService {
   }
 
   public async updateUser(
-    id: number,
+    userId: number,
     userPayload,
     addressPayload
   ): Promise<{ user: User; address: Address }> {
-    const user = await User.findOrFail(id)
+    const user = await User.findOrFail(userId)
     const address = await Address.findByOrFail('userId', user.id)
 
     const updatedUser = await user.merge(userPayload).save()
@@ -33,9 +34,12 @@ export default class CrudUsersService {
   }
   public async deleteUser(id: number): Promise<string> {
     const user = await User.findOrFail(id)
+    const address = await Address.findByOrFail('userId', user.id)
     const name = user.name
 
     await user.delete()
+    await address.delete()
+
     return name
   }
 

@@ -25,9 +25,7 @@ export default class Inventory extends BaseModel {
   @column()
   public sportsCenterId: number
 
-  @belongsTo(() => SportsCenter, {
-    foreignKey: 'sportsCenterId',
-  })
+  @belongsTo(() => SportsCenter, { foreignKey: 'sportsCenterId' })
   public sportsCenter: BelongsTo<typeof SportsCenter>
 
   @column.dateTime({ autoCreate: true })

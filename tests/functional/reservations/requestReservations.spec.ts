@@ -1,6 +1,5 @@
 import Database from '@ioc:Adonis/Lucid/Database'
 import { test } from '@japa/runner'
-import AddressFactory from 'Database/factories/AddressFactory'
 import RequestReservationFactory from 'Database/factories/RequestReservationFactory'
 import SportsCenterFactory from 'Database/factories/SportsCenterFactory'
 import SportsCourtFactory from 'Database/factories/SportsCourtFactory'
@@ -13,16 +12,12 @@ test.group('Request Reservation', (group) => {
   })
 
   test('it should create a request reservation', async ({ client, assert }) => {
-    const { id } = await AddressFactory.create()
-    const user = await UserFactory.merge({ addressId: id }).create()
-    const address = await AddressFactory.create()
-    const sportsCenter = await SportsCenterFactory.merge({
-      addressId: address.id,
-      owner: user.id,
-    }).create()
+    const user = await UserFactory.merge({ type: 'OWNER' }).with('address', 1).create()
+    const sportsCenter = await SportsCenterFactory.merge({ owner: user.id })
+      .with('address', 1)
+      .create()
     const sportsCourt = await SportsCourtFactory.merge({ sportsCenterId: sportsCenter.id }).create()
-    const address2 = await AddressFactory.create()
-    const user2 = await UserFactory.merge({ addressId: address2.id }).create()
+    const user2 = await UserFactory.with('address', 1).create()
 
     const requestReservationPayload = {
       startTime: '2023-10-17 18:00:00',
@@ -43,17 +38,69 @@ test.group('Request Reservation', (group) => {
     assert.equal(response.body().requestReservation.user_id, user2.id)
   })
 
-  test('it should update a request Reservation', async ({ assert, client }) => {
-    const { id } = await AddressFactory.create()
-    const user = await UserFactory.merge({ addressId: id }).create()
-    const address = await AddressFactory.create()
-    const sportsCenter = await SportsCenterFactory.merge({
-      addressId: address.id,
-      owner: user.id,
-    }).create()
+  test('it should return 403 when user is not USER', async ({ assert, client }) => {
+    const user = await UserFactory.merge({ type: 'OWNER' }).with('address', 1).create()
+    const sportsCenter = await SportsCenterFactory.merge({ owner: user.id })
+      .with('address', 1)
+      .create()
     const sportsCourt = await SportsCourtFactory.merge({ sportsCenterId: sportsCenter.id }).create()
-    const address2 = await AddressFactory.create()
-    const user2 = await UserFactory.merge({ addressId: address2.id }).create()
+
+    const requestReservationPayload = {
+      startTime: '2023-10-17 18:00:00',
+      endTime: '2023-10-17 19:00:00',
+      amount: '1510',
+    }
+
+    const response = await client
+      .post(`/sportsCenters/${sportsCenter.id}/sportsCourts/${sportsCourt.id}/requestReservations`)
+      .json(requestReservationPayload)
+      .loginAs(user)
+
+    response.assertStatus(403)
+    assert.equal(response.body().code, 'E_AUTHORIZATION_FAILURE')
+  })
+
+  test('it should return 409 when time interval  is already reservate', async ({
+    assert,
+    client,
+  }) => {
+    const user = await UserFactory.merge({ type: 'OWNER' }).with('address', 1).create()
+    const sportsCenter = await SportsCenterFactory.merge({ owner: user.id })
+      .with('address', 1)
+      .create()
+    const sportsCourt = await SportsCourtFactory.merge({ sportsCenterId: sportsCenter.id }).create()
+    const user2 = await UserFactory.with('address', 1).create()
+    const reservation = await RequestReservationFactory.merge({
+      status: 'ACCEPTED',
+      sportsCourtId: sportsCourt.id,
+    })
+      .with('user')
+      .with('owner')
+      .create()
+
+    console.log(reservation.startTime)
+    const requestReservationPayload = {
+      startTime: reservation.startTime,
+      endTime: reservation.endTime,
+      amount: '1510',
+    }
+
+    const response = await client
+      .post(`/sportsCenters/${sportsCenter.id}/sportsCourts/${sportsCourt.id}/requestReservations`)
+      .json(requestReservationPayload)
+      .loginAs(user2)
+
+    console.log(response.body().message)
+    response.assertStatus(409)
+  }).pin()
+
+  test('it should update a request Reservation', async ({ assert, client }) => {
+    const user = await UserFactory.merge({ type: 'OWNER' }).with('address', 1).create()
+    const sportsCenter = await SportsCenterFactory.merge({ owner: user.id })
+      .with('address', 1)
+      .create()
+    const sportsCourt = await SportsCourtFactory.merge({ sportsCenterId: sportsCenter.id }).create()
+    const user2 = await UserFactory.with('address', 1).create()
     const requestReservation = await RequestReservationFactory.merge({
       userId: user2.id,
       ownerId: user.id,
@@ -79,16 +126,12 @@ test.group('Request Reservation', (group) => {
   })
 
   test('it should delete a request reservation', async ({ assert, client }) => {
-    const { id } = await AddressFactory.create()
-    const user = await UserFactory.merge({ addressId: id }).create()
-    const address = await AddressFactory.create()
-    const sportsCenter = await SportsCenterFactory.merge({
-      addressId: address.id,
-      owner: user.id,
-    }).create()
+    const user = await UserFactory.merge({ type: 'OWNER' }).with('address', 1).create()
+    const sportsCenter = await SportsCenterFactory.merge({ owner: user.id })
+      .with('address', 1)
+      .create()
     const sportsCourt = await SportsCourtFactory.merge({ sportsCenterId: sportsCenter.id }).create()
-    const address2 = await AddressFactory.create()
-    const user2 = await UserFactory.merge({ addressId: address2.id }).create()
+    const user2 = await UserFactory.with('address', 1).create()
     const requestReservation = await RequestReservationFactory.merge({
       userId: user2.id,
       ownerId: user.id,
