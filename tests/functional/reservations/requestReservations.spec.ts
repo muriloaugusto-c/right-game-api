@@ -92,7 +92,7 @@ test.group('Request Reservation', (group) => {
 
     console.log(response.body().message)
     response.assertStatus(409)
-  }).pin()
+  })
 
   test('it should update a request Reservation', async ({ assert, client }) => {
     const user = await UserFactory.merge({ type: 'OWNER' }).with('address', 1).create()

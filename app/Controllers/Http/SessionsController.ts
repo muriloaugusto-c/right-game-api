@@ -5,7 +5,7 @@ export default class SessionsController {
     const { email, password } = request.only(['email', 'password'])
 
     const token = await auth.use('api').attempt(email, password, {
-      expiresIn: '2hours',
+      expiresIn: '7 days',
     })
 
     return response.created({ user: auth.user, token })

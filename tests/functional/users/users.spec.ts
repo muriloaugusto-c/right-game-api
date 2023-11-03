@@ -171,7 +171,7 @@ test.group('User', (group) => {
     assert.equal(response.body().address.city, userPayload.city)
     assert.equal(response.body().address.neighborhood, userPayload.neighborhood)
     response.assertStatus(200)
-  })
+  }).pin()
 
   test('it should return 404 when provided an unexisting user for update', async ({ client }) => {
     const user = await UserFactory.with('address', 1).create()
