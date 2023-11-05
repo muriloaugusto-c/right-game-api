@@ -9,7 +9,7 @@ export default class CrudSportsCourtsService {
     sportsCenter: SportsCenter,
     sportsCourtPayload
   ): Promise<SportsCourt> {
-    await serviceNameDuplicate.nameDuplicate(sportsCourtPayload.name)
+    await serviceNameDuplicate.nameDuplicate(sportsCourtPayload.name, sportsCenter.id)
 
     const sportsCourt = await sportsCenter.related('sportsCourt').create(sportsCourtPayload)
 
@@ -18,7 +18,7 @@ export default class CrudSportsCourtsService {
 
   public async updateSportsCourts(sportsCourtId: number, sportsCourtPayload): Promise<SportsCourt> {
     const sportsCourt = await SportsCourt.findOrFail(sportsCourtId)
-    await serviceNameDuplicate.nameDuplicate(sportsCourtPayload.name)
+    await serviceNameDuplicate.nameDuplicate(sportsCourtPayload.name, sportsCourt.sportsCenterId)
 
     const updateSportsCourt = await sportsCourt.merge(sportsCourtPayload)
 

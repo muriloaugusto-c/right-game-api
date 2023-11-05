@@ -1,6 +1,7 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import AuditLog from 'App/Models/AuditLog'
 import Reservation from 'App/Models/Reservation'
+import SportsCenter from 'App/Models/SportsCenter'
 import CrudReservationsService from 'App/Services/Reservations/CrudReservationsService'
 import CreateReservationValidator from 'App/Validators/CreateReservationValidator'
 import UpdateReservationValidator from 'App/Validators/UpdateReservationValidator'
@@ -16,9 +17,14 @@ export default class ReservationsController {
     })
   }
 
-  public async index({ request, response }: HttpContextContract) {
+  public async index({ request, response, bouncer }: HttpContextContract) {
     try {
       const ownerId = request.param('ownerId') as number
+
+      await bouncer.authorize(
+        'manageSportsCenter',
+        await SportsCenter.findByOrFail('ownerId', ownerId)
+      )
 
       const reservations = await Reservation.query()
         .preload('sportsCourt', (query) => {
