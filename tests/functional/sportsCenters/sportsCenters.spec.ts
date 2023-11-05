@@ -283,7 +283,7 @@ test.group('SportsCenter', (group) => {
 
     await SportsCenterFactory.with('address', 1).createMany(10)
 
-    const response = await client.get(`/sportsCenters/${user.name}`).json({})
+    const response = await client.get(`/sportsCenters/${sportsCenter.ownerId}`).json({})
 
     response.assertStatus(200)
     assert.exists(response.body().sportsCenters, 'Sports Centers undefined')

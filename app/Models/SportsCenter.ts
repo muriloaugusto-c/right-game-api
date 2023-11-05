@@ -73,6 +73,6 @@ export default class SportsCenter extends BaseModel {
     query
       .select('sports_centers.*')
       .join('users', 'sports_centers.owner_id', 'users.id')
-      .where('users.name', 'LIKE', `%${owner}%`)
+      .where('users.id', owner)
   })
 }

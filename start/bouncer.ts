@@ -53,11 +53,11 @@ export const { actions } = Bouncer.define('updateUser', (user: User, updatedUser
   .define('createReservation', (user: User) => {
     return user.type === 'USER'
   })
-  .define('manageReservation', (user: User, Reservation: Reservation) => {
-    return user.id === Reservation.userId || user.id === Reservation.ownerId
+  .define('manageReservation', (user: User, reservation: Reservation) => {
+    return user.id === reservation.userId || user.id === reservation.ownerId
   })
-  .define('acceptOrDenyReservation', (user: User, Reservation: Reservation) => {
-    return user.type === 'OWNER' && user.id === Reservation.ownerId
+  .define('acceptOrDenyReservation', (user: User, reservation: Reservation) => {
+    return user.type === 'OWNER' && user.id === reservation.ownerId
   })
 
 /*

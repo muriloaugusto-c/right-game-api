@@ -23,8 +23,9 @@ export default class SportsCourtsController {
       const sportsCenterId = request.param('sportsCenterId') as number
 
       const sportsCourts = await service.filterByQueryString(text, sportsCenterId, sportsCourtId)
+      const sportsCenter = await SportsCenter.findOrFail(sportsCenterId)
 
-      return response.ok({ sportsCourts })
+      return response.ok({ sportsCourts, sportsCenter })
     } catch (error) {
       response.status(error.status).send({ code: error.code, message: error.message })
     }

@@ -41,16 +41,14 @@ export default class CrudSportsCourtsService {
   }
 
   private all(sportsCenterId: number) {
-    return SportsCourt.query().preload('sportsCenter').where('sports_center_id', sportsCenterId)
+    return SportsCourt.query().where('sports_center_id', sportsCenterId)
   }
 
   private filterById(sportsCourtId: number) {
-    return SportsCourt.query().preload('sportsCenter').where('id', sportsCourtId)
+    return SportsCourt.query().where('id', sportsCourtId)
   }
 
   private filterByText(text: string, sportsCenterId: number) {
-    return SportsCourt.query()
-      .preload('sportsCenter')
-      .withScopes((scope) => scope.withText(text, sportsCenterId))
+    return SportsCourt.query().withScopes((scope) => scope.withText(text, sportsCenterId))
   }
 }
