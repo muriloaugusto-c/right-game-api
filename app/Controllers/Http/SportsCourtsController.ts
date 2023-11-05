@@ -1,7 +1,8 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import AuditLog from 'App/Models/AuditLog'
 import SportsCenter from 'App/Models/SportsCenter'
-import CrudSportsCourtsService from 'App/Services/SportsCourts/CrudSportsCourts'
+
+import CrudSportsCourtsService from 'App/Services/SportsCourts/CrudSportsCourtsService'
 import CreateSportsCourtValidator from 'App/Validators/CreateSportsCourtValidator'
 import UptadeSportsCourtValidator from 'App/Validators/UptadeSportsCourtValidator'
 

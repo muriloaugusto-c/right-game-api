@@ -13,7 +13,7 @@ test.group('Products', (group) => {
 
   test('it should create a product in inventory', async ({ client, assert }) => {
     const user = await UserFactory.merge({ type: 'OWNER' }).with('address', 1).create()
-    const sportsCenter = await SportsCenterFactory.merge({ owner: user.id })
+    const sportsCenter = await SportsCenterFactory.merge({ ownerId: user.id })
       .with('address', 1)
       .create()
     const inventory = await Inventory.create({ sportsCenterId: sportsCenter.id })
@@ -21,10 +21,9 @@ test.group('Products', (group) => {
 
     const productPayload = {
       name: 'Colete',
-      value: 15,
+      value: '15',
       quantity: 5,
       description: 'Aluguel de colete',
-      photoUrls: 'roupas.png',
     }
 
     const response = await client
@@ -39,12 +38,11 @@ test.group('Products', (group) => {
     assert.equal(response.body().product.value, productPayload.value)
     assert.equal(response.body().product.quantity, productPayload.quantity)
     assert.equal(response.body().product.description, productPayload.description)
-    assert.equal(response.body().product.photo_urls, productPayload.photoUrls)
   })
 
   test('it should return 403 when user is not owner of sports center', async ({ client }) => {
     const user = await UserFactory.merge({ type: 'OWNER' }).with('address', 1).create()
-    const sportsCenter = await SportsCenterFactory.merge({ owner: user.id })
+    const sportsCenter = await SportsCenterFactory.merge({ ownerId: user.id })
       .with('address', 1)
       .create()
 
@@ -54,7 +52,7 @@ test.group('Products', (group) => {
 
     const productPayload = {
       name: 'Colete',
-      value: 15,
+      value: '15,00',
       quantity: 5,
       description: 'Aluguel de colete',
       photoUrls: 'roupas.png',
@@ -70,7 +68,7 @@ test.group('Products', (group) => {
 
   test('it should return 422 when data is not provided', async ({ assert, client }) => {
     const user = await UserFactory.merge({ type: 'OWNER' }).with('address', 1).create()
-    const sportsCenter = await SportsCenterFactory.merge({ owner: user.id })
+    const sportsCenter = await SportsCenterFactory.merge({ ownerId: user.id })
       .with('address', 1)
       .create()
 
@@ -88,7 +86,7 @@ test.group('Products', (group) => {
 
   test('it should update a product', async ({ assert, client }) => {
     const user = await UserFactory.merge({ type: 'OWNER' }).with('address', 1).create()
-    const sportsCenter = await SportsCenterFactory.merge({ owner: user.id })
+    const sportsCenter = await SportsCenterFactory.merge({ ownerId: user.id })
       .with('address', 1)
       .create()
 
@@ -97,7 +95,7 @@ test.group('Products', (group) => {
     const product = await inventory.related('products').create(await ProductFactory.create())
 
     const productPayload = {
-      value: 100,
+      value: '100',
       quantity: 10,
     }
 
@@ -112,7 +110,6 @@ test.group('Products', (group) => {
     assert.equal(response.body().product.value, productPayload.value)
     assert.equal(response.body().product.quantity, productPayload.quantity)
     assert.equal(response.body().product.name, product.name)
-    assert.equal(response.body().product.photo_urls, product.photoUrls)
     assert.equal(response.body().product.description, product.description)
   })
 
@@ -120,7 +117,7 @@ test.group('Products', (group) => {
     client,
   }) => {
     const user = await UserFactory.merge({ type: 'OWNER' }).with('address', 1).create()
-    const sportsCenter = await SportsCenterFactory.merge({ owner: user.id })
+    const sportsCenter = await SportsCenterFactory.merge({ ownerId: user.id })
       .with('address', 1)
       .create()
 
@@ -129,7 +126,7 @@ test.group('Products', (group) => {
     await inventory.related('products').create(await ProductFactory.create())
 
     const productPayload = {
-      value: 100,
+      value: '100',
       quantity: 10,
     }
 
@@ -145,7 +142,7 @@ test.group('Products', (group) => {
     client,
   }) => {
     const user = await UserFactory.merge({ type: 'OWNER' }).with('address', 1).create()
-    const sportsCenter = await SportsCenterFactory.merge({ owner: user.id })
+    const sportsCenter = await SportsCenterFactory.merge({ ownerId: user.id })
       .with('address', 1)
       .create()
 
@@ -169,7 +166,7 @@ test.group('Products', (group) => {
 
   test('it should delete a product', async ({ client }) => {
     const user = await UserFactory.merge({ type: 'OWNER' }).with('address', 1).create()
-    const sportsCenter = await SportsCenterFactory.merge({ owner: user.id })
+    const sportsCenter = await SportsCenterFactory.merge({ ownerId: user.id })
       .with('address', 1)
       .create()
 
@@ -189,7 +186,7 @@ test.group('Products', (group) => {
     client,
   }) => {
     const user = await UserFactory.merge({ type: 'OWNER' }).with('address', 1).create()
-    const sportsCenter = await SportsCenterFactory.merge({ owner: user.id })
+    const sportsCenter = await SportsCenterFactory.merge({ ownerId: user.id })
       .with('address', 1)
       .create()
 
@@ -208,7 +205,7 @@ test.group('Products', (group) => {
     client,
   }) => {
     const user = await UserFactory.merge({ type: 'OWNER' }).with('address', 1).create()
-    const sportsCenter = await SportsCenterFactory.merge({ owner: user.id })
+    const sportsCenter = await SportsCenterFactory.merge({ ownerId: user.id })
       .with('address', 1)
       .create()
 
@@ -230,7 +227,7 @@ test.group('Products', (group) => {
     client,
   }) => {
     const user = await UserFactory.merge({ type: 'OWNER' }).with('address', 1).create()
-    const sportsCenter = await SportsCenterFactory.merge({ owner: user.id })
+    const sportsCenter = await SportsCenterFactory.merge({ ownerId: user.id })
       .with('address', 1)
       .create()
 
@@ -254,7 +251,7 @@ test.group('Products', (group) => {
 
   test('it should return a product by name and sports center', async ({ assert, client }) => {
     const user = await UserFactory.merge({ type: 'OWNER' }).with('address', 1).create()
-    const sportsCenter = await SportsCenterFactory.merge({ owner: user.id })
+    const sportsCenter = await SportsCenterFactory.merge({ ownerId: user.id })
       .with('address', 1)
       .create()
 
@@ -278,7 +275,7 @@ test.group('Products', (group) => {
     client,
   }) => {
     const user = await UserFactory.merge({ type: 'OWNER' }).with('address', 1).create()
-    const sportsCenter = await SportsCenterFactory.merge({ owner: user.id })
+    const sportsCenter = await SportsCenterFactory.merge({ ownerId: user.id })
       .with('address', 1)
       .create()
 

@@ -29,6 +29,7 @@ export default class CreateSportsCourtValidator {
     description: schema.string(),
     size: schema.string(),
     photoUrls: schema.string(),
+    amount: schema.string(),
   })
 
   /**
@@ -48,5 +49,6 @@ export default class CreateSportsCourtValidator {
     'description.required': 'Events is required',
     'size.required': 'Contact Number is required',
     'photoUrls.required': 'Parking is required',
+    'amount.required': 'Amount is required',
   }
 }

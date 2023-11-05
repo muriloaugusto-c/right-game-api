@@ -10,6 +10,7 @@ export default Factory.define(SportsCourt, ({ faker }) => {
     description: faker.lorem.word(),
     size: faker.lorem.word(),
     photoUrls: faker.internet.url(),
+    amount: faker.finance.amount(),
   }
 })
   .relation('sportsCenter', () => SportsCenterFactory)

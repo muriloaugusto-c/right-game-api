@@ -23,12 +23,14 @@ import Route from '@ioc:Adonis/Core/Route'
 // ROTAS USERS
 Route.get('/users', 'UsersController.index').middleware('auth')
 Route.post('/users', 'UsersController.store')
+Route.post('/owners/', 'UsersController.store')
+Route.post('/users/owner', 'UsersController.store')
 Route.put('/users/:userId', 'UsersController.update').middleware('auth')
-Route.put('/users/:userId/owner', 'UsersController.makeOwner').middleware('auth')
 Route.delete('/users/:userId', 'UsersController.destroy').middleware('auth')
 
 // ROTAS SPORTSCENTERS
 Route.get('/sportsCenters', 'SportsCentersController.index')
+Route.get('/sportsCenters/:ownerId', 'SportsCentersController.index')
 Route.post('/sportsCenters', 'SportsCentersController.store').middleware('auth')
 Route.put('/sportsCenters/:sportsCenterId', 'SportsCentersController.update').middleware('auth')
 Route.delete('/sportsCenters/:sportsCenterId', 'SportsCentersController.destroy').middleware('auth')
@@ -63,27 +65,15 @@ Route.delete(
 ).middleware('auth')
 
 //ROTAS REQUESTRESERVATION
-Route.get('/requestReservations/:ownerId', 'RequestReservationsController.index').middleware('auth')
+Route.get('/reservations/:ownerId', 'ReservationsController.index').middleware('auth')
 Route.post(
-  '/sportsCenters/:sportsCenterId/sportsCourts/:sportsCourtId/requestReservations',
-  'RequestReservationsController.store'
+  '/sportsCenters/:sportsCenterId/sportsCourts/:sportsCourtId/reservations',
+  'ReservationsController.store'
 ).middleware('auth')
-Route.put(
-  '/requestReservations/:requestReservationId',
-  'RequestReservationsController.update'
-).middleware('auth')
-Route.delete(
-  '/requestReservations/:requestReservationId',
-  'RequestReservationsController.delete'
-).middleware('auth')
-Route.put(
-  '/requestReservations/:requestReservationId/accept',
-  'RequestReservationsController.accept'
-).middleware('auth')
-Route.put(
-  '/requestReservations/:requestReservationId/reject',
-  'RequestReservationsController.reject'
-).middleware('auth')
+Route.put('/reservations/:reservationId', 'ReservationsController.update').middleware('auth')
+Route.delete('/reservations/:reservationId', 'ReservationsController.delete').middleware('auth')
+Route.put('/reservations/:reservationId/accept', 'ReservationsController.accept').middleware('auth')
+Route.put('/reservations/:reservationId/reject', 'ReservationsController.reject').middleware('auth')
 
 //ROTAS RATING
 

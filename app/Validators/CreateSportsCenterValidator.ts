@@ -26,10 +26,9 @@ export default class CreateSportsCenterValidator {
   public schema = schema.create({
     name: schema.string(),
     photoUrls: schema.string(),
-    events: schema.string.optional(),
     contactNumber: schema.string(),
-    parking: schema.string(),
-    steakhouse: schema.string(),
+    parking: schema.boolean(),
+    steakhouse: schema.boolean(),
   })
 
   /**

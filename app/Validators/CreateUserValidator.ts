@@ -29,7 +29,7 @@ export default class CreateUserValidator {
     email: schema.string({}, [rules.email()]),
     doc: schema.string(),
     password: schema.string({}, [rules.minLength(4)]),
-    birthday: schema.date({}),
+    birthdate: schema.string.optional({}),
     phoneNumber: schema.string({}),
   })
 
@@ -44,5 +44,10 @@ export default class CreateUserValidator {
    * }
    *
    */
-  public messages: CustomMessages = {}
+  public messages: CustomMessages = {
+    'name.required': 'Name is required',
+    'email.required': 'Email is required',
+    'doc.required': 'Doc is required',
+    'phoneNumber.required': 'Phone Number is required',
+  }
 }

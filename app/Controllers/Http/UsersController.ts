@@ -6,7 +6,6 @@ import CreateUserValidator from 'App/Validators/CreateUserValidator'
 import UpdateAdressValidator from 'App/Validators/UpdateAdressValidator'
 import UpdateUserValidator from 'App/Validators/UpdateUserValidator'
 import CrudUsersService from 'App/Services/Users/CrudUsersService'
-import MakeOwnerService from 'App/Services/Users/MakeOwnerService'
 
 const service = new CrudUsersService()
 
@@ -35,18 +34,31 @@ export default class UsersController {
 
   public async store({ request, response }: HttpContextContract) {
     try {
+      const route = request.url()
+
       const userPayload = await request.validate(CreateUserValidator)
       const addressPayload = await request.validate(CreateAddressValidator)
 
-      const { user, address } = await service.createUser(userPayload, addressPayload)
+      if (route.includes('/users')) {
+        const { user, address } = await service.createUser(userPayload, addressPayload)
 
-      await this.auditLog(
-        'CREATE USER',
-        `User ${user.name} with e-mail: ${user.email} created in right-game.`,
-        user.id
-      )
+        await this.auditLog(
+          'CREATE USER',
+          `User ${user.name} with e-mail: ${user.email} created in right-game.`,
+          user.id
+        )
 
-      response.created({ user, address })
+        response.created({ user, address })
+      } else if (route.includes('/owners')) {
+        const { user, address } = await service.createOwner(userPayload, addressPayload)
+
+        await this.auditLog(
+          'CREATE USER',
+          `Owner ${user.name} with e-mail: ${user.email} created in right-game.`,
+          user.id
+        )
+        response.created({ user, address })
+      }
     } catch (error) {
       response.status(error.status).send({ code: error.code, message: error.message })
     }
@@ -86,20 +98,6 @@ export default class UsersController {
       )
 
       response.ok({})
-    } catch (error) {
-      response.status(error.status).send({ code: error.code, message: error.message })
-    }
-  }
-
-  public async makeOwner({ request, response, bouncer }: HttpContextContract) {
-    try {
-      await bouncer.authorize('makeOnwer')
-      const id = request.param('userId') as number
-
-      const newOwner = new MakeOwnerService()
-      const user = await newOwner.makeOwner(id)
-
-      response.ok({ user })
     } catch (error) {
       response.status(error.status).send({ code: error.code, message: error.message })
     }

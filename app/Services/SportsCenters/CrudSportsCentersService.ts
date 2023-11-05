@@ -14,7 +14,7 @@ export default class CrudSportsCentersService {
     await serviceNameDuplicate.nameDuplicate(sportsCenterPayload.name)
 
     const sportsCenter = await SportsCenter.create(sportsCenterPayload)
-    await sportsCenter.merge({ owner: user.id }).save()
+    await sportsCenter.merge({ ownerId: user.id }).save()
 
     const address = await sportsCenter.related('address').create(addressPayload)
     await sportsCenter.related('inventory').create({})
@@ -50,7 +50,7 @@ export default class CrudSportsCentersService {
     return name
   }
 
-  public async filterByQueryString(text: string, sportsCenterId: number, owner: string) {
+  public async filterByQueryString(text: string, sportsCenterId: number, owner: number) {
     if (owner) return this.filterByOwner(owner)
     else if (sportsCenterId) return this.filterById(sportsCenterId)
     else if (text) return this.filterbyText(text)
@@ -58,13 +58,13 @@ export default class CrudSportsCentersService {
   }
 
   private all() {
-    return SportsCenter.query().preload('address').preload('ownerUser').preload('inventory')
+    return SportsCenter.query().preload('address').preload('owner').preload('inventory')
   }
 
   private filterById(sportsCenterId: number) {
     return SportsCenter.query()
       .preload('address')
-      .preload('ownerUser')
+      .preload('owner')
       .preload('inventory')
       .withScopes((scope) => scope.withId(sportsCenterId))
   }
@@ -72,15 +72,15 @@ export default class CrudSportsCentersService {
   private filterbyText(text: string) {
     return SportsCenter.query()
       .preload('address')
-      .preload('ownerUser')
+      .preload('owner')
       .preload('inventory')
       .withScopes((scope) => scope.withText(text))
   }
 
-  private filterByOwner(owner: string) {
+  private filterByOwner(owner: number) {
     return SportsCenter.query()
       .preload('address')
-      .preload('ownerUser')
+      .preload('owner')
       .preload('inventory')
       .withScopes((scope) => scope.withOwner(owner))
   }

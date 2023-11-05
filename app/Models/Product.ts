@@ -20,16 +20,13 @@ export default class Product extends BaseModel {
   public name: string
 
   @column()
-  public value: number
+  public value: string
 
   @column()
   public quantity: number
 
   @column()
   public description: string
-
-  @column()
-  public photoUrls: string
 
   @column()
   public inventoryId: number

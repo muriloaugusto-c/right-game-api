@@ -11,7 +11,7 @@ import {
 import { DateTime } from 'luxon'
 
 import Rating from './Rating'
-import RequestReservation from './RequestReservation'
+import Reservation from './Reservation'
 import SportsCenter from './SportsCenter'
 
 type Builder = ModelQueryBuilderContract<typeof SportsCourt>
@@ -38,13 +38,16 @@ export default class SportsCourt extends BaseModel {
   @column()
   public sportsCenterId: number
 
+  @column()
+  public amount: string
+
   @belongsTo(() => SportsCenter, {
     foreignKey: 'sportsCenterId',
   })
   public sportsCenter: BelongsTo<typeof SportsCenter>
 
-  @hasMany(() => RequestReservation, {})
-  public requestReservations: HasMany<typeof RequestReservation>
+  @hasMany(() => Reservation, {})
+  public reservations: HasMany<typeof Reservation>
 
   @hasMany(() => Rating, {})
   public rating: HasMany<typeof Rating>

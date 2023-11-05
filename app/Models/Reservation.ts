@@ -1,24 +1,46 @@
-import { BaseModel, BelongsTo, HasOne, belongsTo, column, hasOne } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, belongsTo, BelongsTo, column } from '@ioc:Adonis/Lucid/Orm'
 import { DateTime } from 'luxon'
 
-import RequestReservation from './RequestReservation'
-import Rating from './Rating'
+import SportsCourt from './SportsCourt'
+import User from './User'
 
 export default class Reservation extends BaseModel {
   @column({ isPrimary: true })
   public id: number
 
   @column()
-  public requestReservationId: number
+  public startTime: DateTime
 
   @column()
-  public status: 'CONFIRMED' | 'IN PROGRESS' | 'COMPLETED' | 'CANCELED'
+  public endTime: DateTime
 
-  @belongsTo(() => RequestReservation, { foreignKey: 'requestReservationId' })
-  public requestReservation: BelongsTo<typeof RequestReservation>
+  @column()
+  public amount: string
 
-  @hasOne(() => Rating, {})
-  public rating: HasOne<typeof Rating>
+  @column()
+  public status: 'PENDING' | 'REJECTED' | 'CONFIRMED' | 'IN PROGRESS' | 'COMPLETED' | 'CANCELED'
+
+  @belongsTo(() => User, {
+    foreignKey: 'ownerId',
+  })
+  public owner: BelongsTo<typeof User>
+
+  @column()
+  public ownerId: number
+
+  @belongsTo(() => User, {
+    foreignKey: 'userId',
+  })
+  public user: BelongsTo<typeof User>
+
+  @column()
+  public userId: number
+
+  @belongsTo(() => SportsCourt, { foreignKey: 'sportsCourtId' })
+  public sportsCourt: BelongsTo<typeof SportsCourt>
+
+  @column()
+  public sportsCourtId: number
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

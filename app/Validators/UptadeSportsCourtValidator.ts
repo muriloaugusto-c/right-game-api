@@ -29,6 +29,7 @@ export default class UptadeSportsCourtValidator {
     description: schema.string.optional(),
     size: schema.string.optional(),
     photoUrls: schema.string.optional(),
+    amount: schema.string.optional(),
   })
 
   /**

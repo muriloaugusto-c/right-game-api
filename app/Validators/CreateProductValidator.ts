@@ -25,10 +25,9 @@ export default class CreateProductValidator {
    */
   public schema = schema.create({
     name: schema.string(),
-    value: schema.number(),
+    value: schema.string(),
     quantity: schema.number(),
     description: schema.string(),
-    photoUrls: schema.string(),
   })
 
   /**
@@ -47,6 +46,5 @@ export default class CreateProductValidator {
     'value.required': 'Value is required',
     'quantity.required': 'Quantity is required',
     'description.required': 'Description is required',
-    'photoUrls.required': 'Photo Urls is required',
   }
 }

@@ -30,24 +30,21 @@ export default class SportsCenter extends BaseModel {
   public photoUrls: string
 
   @column()
-  public events: string
-
-  @column()
   public contactNumber: string
 
   @column()
-  public parking: string
+  public parking: boolean
 
   @column()
-  public steakhouse: string
+  public steakhouse: boolean
 
   @column()
-  public owner: number
+  public ownerId: number
 
   @belongsTo(() => User, {
-    foreignKey: 'owner',
+    foreignKey: 'ownerId',
   })
-  public ownerUser: BelongsTo<typeof User>
+  public owner: BelongsTo<typeof User>
 
   @hasOne(() => Address, {})
   public address: HasOne<typeof Address>
@@ -72,10 +69,10 @@ export default class SportsCenter extends BaseModel {
     query.where('name', 'LIKE', `%${text}%`)
   })
 
-  public static withOwner = scope((query: Builder, owner: string) => {
+  public static withOwner = scope((query: Builder, owner: number) => {
     query
       .select('sports_centers.*')
-      .join('users', 'sports_centers.owner', 'users.id')
+      .join('users', 'sports_centers.owner_id', 'users.id')
       .where('users.name', 'LIKE', `%${owner}%`)
   })
 }

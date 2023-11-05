@@ -9,13 +9,12 @@ export default class extends BaseSchema {
 
       table.string('name').notNullable()
       table.string('photo_urls').notNullable()
-      table.string('events')
       table.string('contact_number').notNullable()
-      table.string('parking')
-      table.string('steakhouse')
+      table.boolean('parking')
+      table.boolean('steakhouse')
 
       // RELACIONAMENTO ENTRE A TABELA USERS
-      table.integer('owner').unsigned().references('users.id').onDelete('CASCADE')
+      table.integer('owner_id').unsigned().references('users.id').onDelete('CASCADE')
 
       table.timestamp('created_at', { useTz: true })
       table.timestamp('updated_at', { useTz: true })

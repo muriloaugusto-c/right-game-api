@@ -11,8 +11,6 @@ export default class RatingsController {
     const sportsCourt = await SportsCourt.findOrFail(sportsCourtId)
     const user = await auth.authenticate()
 
-    const reservationCheck = await
-
     const rating = await sportsCourt.related('rating').create(ratingPayload)
 
     response.created({ rating })

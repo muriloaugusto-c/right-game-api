@@ -21,7 +21,8 @@ export default class SportsCentersController {
 
   public async index({ request, response }: HttpContextContract) {
     try {
-      const { text, ['sportsCenter']: sportsCenterId, owner } = request.qs()
+      const { text, ['sportsCenter']: sportsCenterId } = request.qs()
+      const owner = request.param('ownerId') as number
 
       const sportsCenters = await service.filterByQueryString(text, sportsCenterId, owner)
 

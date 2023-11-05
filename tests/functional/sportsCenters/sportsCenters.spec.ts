@@ -15,10 +15,9 @@ test.group('SportsCenter', (group) => {
     const sportsCenterPayload = {
       name: 'JB',
       photoUrls: 'html',
-      events: 'não',
       contactNumber: '41 999651 0004',
-      parking: 'sim',
-      steakhouse: 'sim',
+      parking: true,
+      steakhouse: true,
       street: 'Rua agostinho merlin',
       streetNumber: 912,
       zipCode: '80330300',
@@ -36,7 +35,7 @@ test.group('SportsCenter', (group) => {
     assert.equal(response.body().sportsCenter.contact_number, sportsCenterPayload.contactNumber)
     assert.equal(response.body().sportsCenter.parking, sportsCenterPayload.parking)
     assert.equal(response.body().sportsCenter.steakhouse, sportsCenterPayload.steakhouse)
-    assert.equal(response.body().sportsCenter.owner, user.id)
+    assert.equal(response.body().sportsCenter.owner_id, user.id)
     assert.exists(response.body().address, 'Address undefined')
     assert.exists(response.body().address.id, 'Id undefined')
     assert.equal(response.body().address.street, sportsCenterPayload.street)
@@ -54,10 +53,9 @@ test.group('SportsCenter', (group) => {
     const sportsCenterPayload = {
       name: 'JB',
       photoUrls: 'html',
-      events: 'não',
       contactNumber: '41 999651 0004',
-      parking: 'sim',
-      steakhouse: 'sim',
+      parking: true,
+      steakhouse: true,
       street: 'Rua agostinho merlin',
       streetNumber: 912,
       zipCode: '80330300',
@@ -95,10 +93,9 @@ test.group('SportsCenter', (group) => {
     const sportsCenterPayload = {
       name: sportsCenter.name,
       photoUrls: 'html',
-      events: 'não',
       contactNumber: '41 999651 0004',
-      parking: 'sim',
-      steakhouse: 'sim',
+      parking: true,
+      steakhouse: true,
       street: 'Rua agostinho merlin',
       streetNumber: 912,
       zipCode: '80330300',
@@ -116,17 +113,16 @@ test.group('SportsCenter', (group) => {
 
   test('it should update a Sports Center', async ({ client, assert }) => {
     const user = await UserFactory.apply('owner').with('address', 1).create()
-    const sportsCenter = await SportsCenterFactory.merge({ owner: user.id })
+    const sportsCenter = await SportsCenterFactory.merge({ ownerId: user.id })
       .with('address', 1)
       .create()
 
     const sportsCenterPayload = {
       name: 'JB',
       photoUrls: 'html',
-      events: 'não',
       contactNumber: '41 999651 0004',
-      parking: 'sim',
-      steakhouse: 'sim',
+      parking: true,
+      steakhouse: true,
       street: 'Rua agostinho merlin',
       streetNumber: 912,
       zipCode: '80330300',
@@ -148,7 +144,7 @@ test.group('SportsCenter', (group) => {
     assert.equal(response.body().sportsCenter.contact_number, sportsCenterPayload.contactNumber)
     assert.equal(response.body().sportsCenter.parking, sportsCenterPayload.parking)
     assert.equal(response.body().sportsCenter.steakhouse, sportsCenterPayload.steakhouse)
-    assert.equal(response.body().sportsCenter.owner, user.id)
+    assert.equal(response.body().sportsCenter.owner_id, user.id)
     assert.equal(response.body().address.street, sportsCenterPayload.street)
     assert.equal(response.body().address.street_number, sportsCenterPayload.streetNumber)
     assert.equal(response.body().address.zip_code, sportsCenterPayload.zipCode)
@@ -171,7 +167,7 @@ test.group('SportsCenter', (group) => {
     client,
   }) => {
     const user = await UserFactory.apply('owner').with('address', 1).create()
-    const sportsCenter = await SportsCenterFactory.merge({ owner: user.id })
+    const sportsCenter = await SportsCenterFactory.merge({ ownerId: user.id })
       .with('address', 1)
       .create()
     const owner = await UserFactory.apply('owner').with('address', 1).create()
@@ -179,10 +175,9 @@ test.group('SportsCenter', (group) => {
     const sportsCenterPayload = {
       name: 'JB',
       photoUrls: 'html',
-      events: 'não',
       contactNumber: '41 999651 0004',
-      parking: 'sim',
-      steakhouse: 'sim',
+      parking: true,
+      steakhouse: true,
       street: 'Rua agostinho merlin',
       streetNumber: 912,
       zipCode: '80330300',
@@ -201,7 +196,7 @@ test.group('SportsCenter', (group) => {
 
   test('it should delete a Sports Center', async ({ client, assert }) => {
     const user = await UserFactory.apply('owner').with('address', 1).create()
-    const sportsCenter = await SportsCenterFactory.merge({ owner: user.id })
+    const sportsCenter = await SportsCenterFactory.merge({ ownerId: user.id })
       .with('address', 1)
       .create()
 
@@ -225,7 +220,7 @@ test.group('SportsCenter', (group) => {
     client,
   }) => {
     const user = await UserFactory.apply('owner').with('address', 1).create()
-    const sportsCenter = await SportsCenterFactory.merge({ owner: user.id })
+    const sportsCenter = await SportsCenterFactory.merge({ ownerId: user.id })
       .with('address', 1)
       .create()
     const owner = await UserFactory.apply('owner').with('address', 1).create()
@@ -244,10 +239,10 @@ test.group('SportsCenter', (group) => {
   }) => {
     const user = await UserFactory.apply('owner').with('address', 1).create()
     const user2 = await UserFactory.apply('owner').with('address', 1).create()
-    const sportsCenter = await SportsCenterFactory.merge({ owner: user.id })
+    const sportsCenter = await SportsCenterFactory.merge({ ownerId: user.id })
       .with('address', 1)
       .create()
-    const sportsCenter2 = await SportsCenterFactory.merge({ owner: user2.id })
+    const sportsCenter2 = await SportsCenterFactory.merge({ ownerId: user2.id })
       .with('address', 1)
       .create()
 
@@ -263,11 +258,11 @@ test.group('SportsCenter', (group) => {
 
   test('it should return sports center by sport center id', async ({ assert, client }) => {
     const user = await UserFactory.apply('owner').with('address', 1).create()
-    const sportsCenter = await SportsCenterFactory.merge({ owner: user.id })
+    const sportsCenter = await SportsCenterFactory.merge({ ownerId: user.id })
       .with('address', 1)
       .create()
     const user2 = await UserFactory.apply('owner').with('address', 1).create()
-    await SportsCenterFactory.merge({ owner: user2.id }).create()
+    await SportsCenterFactory.merge({ ownerId: user2.id }).create()
 
     const response = await client.get(`/sportsCenters?sportsCenter=${sportsCenter.id}`).json({})
     response.assertStatus(200)
@@ -279,36 +274,36 @@ test.group('SportsCenter', (group) => {
 
   test('it should return sports center by owner', async ({ assert, client }) => {
     const user = await UserFactory.apply('owner').with('address', 1).create()
-    const sportsCenter = await SportsCenterFactory.merge({ owner: user.id })
+    const sportsCenter = await SportsCenterFactory.merge({ ownerId: user.id })
       .with('address', 1)
       .create()
-    const sportsCenter2 = await SportsCenterFactory.merge({ owner: user.id })
+    const sportsCenter2 = await SportsCenterFactory.merge({ ownerId: user.id })
       .with('address', 1)
       .create()
 
     await SportsCenterFactory.with('address', 1).createMany(10)
 
-    const response = await client.get(`/sportsCenters?owner=${user.name}`).json({})
+    const response = await client.get(`/sportsCenters/${user.name}`).json({})
 
     response.assertStatus(200)
     assert.exists(response.body().sportsCenters, 'Sports Centers undefined')
     assert.equal(response.body().sportsCenters[0].id, sportsCenter.id)
     assert.equal(response.body().sportsCenters[0].name, sportsCenter.name)
-    assert.equal(response.body().sportsCenters[0].owner, user.id)
+    assert.equal(response.body().sportsCenters[0].owner_id, user.id)
 
     assert.equal(response.body().sportsCenters[1].id, sportsCenter2.id)
     assert.equal(response.body().sportsCenters[1].name, sportsCenter2.name)
-    assert.equal(response.body().sportsCenters[1].owner, user.id)
+    assert.equal(response.body().sportsCenters[0].owner_id, user.id)
 
     assert.notExists(response.body().sportsCenters[2], 'Sports Center 3 defined')
   })
 
   test('it should return sports center by name', async ({ assert, client }) => {
     const user = await UserFactory.apply('owner').with('address', 1).create()
-    const sportsCenter = await SportsCenterFactory.merge({ owner: user.id })
+    const sportsCenter = await SportsCenterFactory.merge({ ownerId: user.id })
       .with('address', 1)
       .create()
-    await SportsCenterFactory.merge({ owner: user.id }).with('address', 1).create()
+    await SportsCenterFactory.merge({ ownerId: user.id }).with('address', 1).create()
 
     await SportsCenterFactory.with('address', 1).createMany(10)
 
@@ -317,7 +312,7 @@ test.group('SportsCenter', (group) => {
     response.assertStatus(200)
     assert.equal(response.body().sportsCenters[0].id, sportsCenter.id)
     assert.equal(response.body().sportsCenters[0].name, sportsCenter.name)
-    assert.equal(response.body().sportsCenters[0].owner, user.id)
+    assert.equal(response.body().sportsCenters[0].owner_id, user.id)
     assert.notExists(response.body().sportsCenters[1], 'Sports Center 2 defined')
   })
 })

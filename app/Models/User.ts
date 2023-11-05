@@ -14,7 +14,8 @@ import { DateTime } from 'luxon'
 
 import Address from './Address'
 import Rating from './Rating'
-import RequestReservation from './RequestReservation'
+import Reservation from './Reservation'
+import SportsCenter from './SportsCenter'
 
 type Builder = ModelQueryBuilderContract<typeof User>
 
@@ -34,8 +35,8 @@ export default class User extends BaseModel {
   @column({ serializeAs: null })
   public password: string
 
-  @column.date()
-  public birthday: DateTime
+  @column()
+  public birthdate: string
 
   @column()
   public phoneNumber: string
@@ -46,8 +47,11 @@ export default class User extends BaseModel {
   @hasOne(() => Address, { foreignKey: 'userId' })
   public address: HasOne<typeof Address>
 
-  @hasMany(() => RequestReservation, {})
-  public requestReservation: HasMany<typeof RequestReservation>
+  @hasMany(() => SportsCenter, { foreignKey: 'ownerId' })
+  public SportsCenter: HasMany<typeof SportsCenter>
+
+  @hasMany(() => Reservation, {})
+  public reservation: HasMany<typeof Reservation>
 
   @hasMany(() => Rating, {})
   public rating: HasMany<typeof Rating>

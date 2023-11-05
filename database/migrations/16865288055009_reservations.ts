@@ -1,7 +1,7 @@
 import BaseSchema from '@ioc:Adonis/Lucid/Schema'
 
 export default class extends BaseSchema {
-  protected tableName = 'request_reservations'
+  protected tableName = 'reservations'
 
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
@@ -9,7 +9,17 @@ export default class extends BaseSchema {
       table.timestamp('start_time').notNullable()
       table.timestamp('end_time').notNullable()
       table.decimal('amount', 10, 2).notNullable()
-      table.enum('status', ['PENDING', 'ACCEPTED', 'REJECTED']).defaultTo('PENDING').notNullable()
+      table
+        .enum('status', [
+          'PENDING',
+          'REJECTED',
+          'CONFIRMED',
+          'IN PROGRESS',
+          'COMPLETED',
+          'CANCELED',
+        ])
+        .defaultTo('PENDING')
+        .notNullable()
 
       // RELACIONAMENTO ENTRE A TABELA USERS
       table.integer('owner_id').unsigned().references('users.id')

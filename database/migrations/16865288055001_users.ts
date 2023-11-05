@@ -10,7 +10,7 @@ export default class extends BaseSchema {
       table.string('email').notNullable().unique()
       table.string('doc').notNullable().unique()
       table.string('password').notNullable()
-      table.date('birthday')
+      table.string('birthdate')
       table.string('phone_number').notNullable()
       table.enum('type', ['USER', 'OWNER', 'ADMIN']).defaultTo('USER')
 

@@ -10,7 +10,6 @@ export default class extends BaseSchema {
       table.string('text').notNullable()
 
       // RELACIONAMENTO ENTRE A TABELA RESERVATIONS
-      table.integer('reservations_id').unsigned().references('reservations.id')
 
       table.integer('sports_court_id').unsigned().references('sports_courts.id')
 

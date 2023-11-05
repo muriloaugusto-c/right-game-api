@@ -4,16 +4,28 @@ import User from 'App/Models/User'
 import DocValidatorService from './DocValidatorService'
 import DuplicateService from './DuplicateService'
 
+const serviceValidDoc = new DocValidatorService()
+const serviceDuplicate = new DuplicateService()
+
 export default class CrudUsersService {
   public async createUser(userPayload, addressPayload): Promise<{ user: User; address: Address }> {
-    const serviceValidDoc = new DocValidatorService()
-    const serviceDuplicate = new DuplicateService()
-
     await serviceDuplicate.emailDuplicate(userPayload.email)
     await serviceDuplicate.docDuplicate(userPayload.doc)
-    await serviceValidDoc.validateDoc(userPayload.doc)
+    await serviceValidDoc.validateCpf(userPayload.doc)
 
     const user = await User.create(userPayload)
+    const address = await user.related('address').create(addressPayload)
+
+    return { user, address }
+  }
+
+  public async createOwner(userPayload, addressPayload): Promise<{ user: User; address: Address }> {
+    await serviceDuplicate.emailDuplicate(userPayload.email)
+    await serviceDuplicate.docDuplicate(userPayload.doc)
+    await serviceValidDoc.validateCnpj(userPayload.doc)
+
+    const user = await User.create(userPayload)
+    await user.merge({ type: 'OWNER' }).save()
     const address = await user.related('address').create(addressPayload)
 
     return { user, address }

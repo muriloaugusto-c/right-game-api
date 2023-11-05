@@ -14,7 +14,7 @@ test.group('User', (group) => {
       email: 'murilo@gmail.com',
       doc: '105.464.179-06',
       password: 'senha123',
-      birthday: '1998-05-08',
+      birthdate: '1998-05-08',
       phoneNumber: '+55 41 99651 0644',
       street: 'Rua agostinho merlin',
       streetNumber: 912,
@@ -31,7 +31,7 @@ test.group('User', (group) => {
     assert.equal(response.body().user.name, userPayload.name)
     assert.equal(response.body().user.email, userPayload.email)
     assert.equal(response.body().user.doc, userPayload.doc)
-    assert.equal(response.body().user.birthday, userPayload.birthday)
+    assert.equal(response.body().user.birthdate, userPayload.birthdate)
     assert.equal(response.body().user.phone_number, userPayload.phoneNumber)
     assert.notExists(response.body().user.password, 'Password defined')
     assert.equal(response.body().address.street, userPayload.street)
@@ -57,7 +57,7 @@ test.group('User', (group) => {
       email: 'murilo@gmail.com',
       doc: '105.464.179-09',
       password: 'senha123',
-      birthday: '1998-05-08',
+      birthdate: '1998-05-08',
       phoneNumber: '+55 41 99651 0644',
       street: 'Rua agostinho merlin',
       streetNumber: 912,
@@ -71,7 +71,7 @@ test.group('User', (group) => {
 
     response.assertStatus(409)
     assert.equal(response.body().code, 'BAD_REQUEST')
-    assert.equal(response.body().message, 'Doc invalid')
+    assert.equal(response.body().message, 'CPF invalid')
   })
 
   test('it should return 422 when providing an invalid email', async ({ assert, client }) => {
@@ -80,7 +80,7 @@ test.group('User', (group) => {
       email: 'dasda@',
       doc: '12345678911',
       password: 'joao123',
-      birthday: '1998-05-08',
+      birthdate: '1998-05-08',
       phoneNumber: '+554199999999',
       street: 'Rua agostinho merlin',
       streetNumber: 912,
@@ -102,7 +102,7 @@ test.group('User', (group) => {
       email: user.email,
       doc: '10546417906',
       password: 'senha123',
-      birthday: '1998-05-08',
+      birthdate: '1998-05-08',
       phoneNumber: '+55 41 99651 0644',
       street: 'Rua agostinho merlin',
       streetNumber: 912,
@@ -127,7 +127,7 @@ test.group('User', (group) => {
       email: 'murilo@gmail.com',
       doc: user.doc,
       password: 'senha123',
-      birthday: '1998-05-08',
+      birthdate: '1998-05-08',
       phoneNumber: '+55 41 99651 0644',
       street: 'Rua agostinho merlin',
       streetNumber: 912,
@@ -171,7 +171,7 @@ test.group('User', (group) => {
     assert.equal(response.body().address.city, userPayload.city)
     assert.equal(response.body().address.neighborhood, userPayload.neighborhood)
     response.assertStatus(200)
-  }).pin()
+  })
 
   test('it should return 404 when provided an unexisting user for update', async ({ client }) => {
     const user = await UserFactory.with('address', 1).create()
@@ -233,26 +233,6 @@ test.group('User', (group) => {
     const user2 = await UserFactory.create()
 
     const response = await client.delete(`/users/${user.id}`).json({}).loginAs(user2)
-
-    response.assertStatus(403)
-  })
-
-  test('it should make an owner user', async ({ assert, client }) => {
-    const user = await UserFactory.create()
-    const userAdmin = await UserFactory.apply('admin').create()
-
-    const response = await client.put(`/users/${user.id}/owner`).json({}).loginAs(userAdmin)
-
-    response.assertStatus(200)
-    assert.exists(response.body().user, 'User undefined')
-    assert.equal(response.body().user.type, 'OWNER')
-  })
-
-  test('it should return 403 when make an owner user is not admin', async ({ client }) => {
-    const user = await UserFactory.with('address', 1).create()
-    const user2 = await UserFactory.create()
-
-    const response = await client.put(`/users/${user.id}/owner`).json({}).loginAs(user2)
 
     response.assertStatus(403)
   })

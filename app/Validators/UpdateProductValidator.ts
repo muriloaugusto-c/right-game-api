@@ -25,10 +25,9 @@ export default class UpdateProductValidator {
    */
   public schema = schema.create({
     name: schema.string.optional(),
-    value: schema.number.optional(),
+    value: schema.string.optional(),
     quantity: schema.number.optional(),
     description: schema.string.optional(),
-    photoUrls: schema.string.optional(),
   })
 
   /**

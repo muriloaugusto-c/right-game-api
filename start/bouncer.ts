@@ -6,7 +6,7 @@
  */
 
 import Bouncer from '@ioc:Adonis/Addons/Bouncer'
-import RequestReservation from 'App/Models/RequestReservation'
+import Reservation from 'App/Models/Reservation'
 import SportsCenter from 'App/Models/SportsCenter'
 import User from 'App/Models/User'
 
@@ -48,20 +48,17 @@ export const { actions } = Bouncer.define('updateUser', (user: User, updatedUser
     return user.type === 'OWNER'
   })
   .define('manageSportsCenter', (user: User, sportsCenter: SportsCenter) => {
-    return user.type === 'OWNER' && user.id === sportsCenter.owner
+    return user.type === 'OWNER' && user.id === sportsCenter.ownerId
   })
-  .define('createReservationRequest', (user: User) => {
+  .define('createReservation', (user: User) => {
     return user.type === 'USER'
   })
-  .define('manageReservationRequest', (user: User, requestReservation: RequestReservation) => {
-    return user.id === requestReservation.userId || user.id === requestReservation.ownerId
+  .define('manageReservation', (user: User, Reservation: Reservation) => {
+    return user.id === Reservation.userId || user.id === Reservation.ownerId
   })
-  .define(
-    'acceptOrDenyReservationRequest',
-    (user: User, requestReservation: RequestReservation) => {
-      return user.type === 'OWNER' && user.id === requestReservation.ownerId
-    }
-  )
+  .define('acceptOrDenyReservation', (user: User, Reservation: Reservation) => {
+    return user.type === 'OWNER' && user.id === Reservation.ownerId
+  })
 
 /*
 |--------------------------------------------------------------------------
