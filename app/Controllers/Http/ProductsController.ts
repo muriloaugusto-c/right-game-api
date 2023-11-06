@@ -18,10 +18,10 @@ export default class ProductsController {
 
   public async index({ request, response }: HttpContextContract) {
     try {
-      const { text } = request.qs()
+      const { text, ['product']: productId } = request.qs()
       const sportsCenterId = request.param('sportsCenterId') as number
 
-      const products = await service.filterByQueryString(text, sportsCenterId)
+      const products = await service.filterByQueryString(text, sportsCenterId, productId)
 
       return response.ok({ products })
     } catch (error) {
