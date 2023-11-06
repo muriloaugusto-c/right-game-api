@@ -20,7 +20,7 @@ export default class CrudSportsCourtsService {
     const sportsCourt = await SportsCourt.findOrFail(sportsCourtId)
     await serviceNameDuplicate.nameDuplicate(sportsCourtPayload.name, sportsCourt.sportsCenterId)
 
-    const updateSportsCourt = await sportsCourt.merge(sportsCourtPayload)
+    const updateSportsCourt = await sportsCourt.merge(sportsCourtPayload).save()
 
     return updateSportsCourt
   }
