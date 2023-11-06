@@ -32,13 +32,18 @@ export default class CrudProductsService {
     return name
   }
 
-  public filterByQueryString(text: string, sportsCenterId: number) {
+  public filterByQueryString(text: string, sportsCenterId: number, productId: number) {
     if (text && sportsCenterId) return this.filterByText(text, sportsCenterId)
+    else if (productId) return this.filterByProductId(productId)
     else return this.all(sportsCenterId)
   }
 
   private all(sportsCenterId: number) {
     return Inventory.query().preload('products').where('sports_center_id', sportsCenterId)
+  }
+
+  private filterByProductId(productId: number) {
+    return Product.query().where('id', productId)
   }
 
   private filterByText(text: string, sportsCenterId: number) {
