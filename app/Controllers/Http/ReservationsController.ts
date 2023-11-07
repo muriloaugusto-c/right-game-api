@@ -27,20 +27,20 @@ export default class ReservationsController {
       )
 
       const reservations = await Reservation.query()
-        .leftJoin('sports_courts', 'reservations.sports_court_id', 'sports_courts.id')
-        .leftJoin('sports_centers', 'sports_courts.sports_center_id', 'sports_centers.id')
-        .join('users', 'reservations.user_id', 'users.id')
-        .select(
-          'reservations.*',
-          'sports_courts.name AS courtName',
-          'sports_centers.name AS centerName',
-          'users.name AS userName',
-          'users.phone_number'
-        )
+        .innerJoin('sports_courts', 'reservations.sports_court_id', 'sports_courts.id')
+        .innerJoin('sports_centers', 'sports_courts.sports_center_id', 'sports_centers.id')
+        .leftJoin('users', 'reservations.user_id', 'users.id')
         .where('reservations.owner_id', ownerId)
         .where('reservations.status', 'PENDING')
+        .select(
+          'reservations.*',
+          'sports_courts.name AS sports_court_name',
+          'sports_centers.name AS sports_center_name',
+          'users.name AS user_name',
+          'users.phone_number AS user_phone'
+        )
 
-      response.ok({ reservation: reservations })
+      response.ok({ reservations })
     } catch (error) {
       response.status(error.status).send({ code: error.code, message: error.message })
     }
