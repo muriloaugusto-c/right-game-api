@@ -7,14 +7,12 @@ export default class TotalReceivedService {
     const acceptedReservations = await Reservation.query()
       .where('owner_id', ownerId)
       .andWhere('status', 'COMPLETED')
-    console.log('OWNER ID ' + ownerId)
 
     const totalReceived = acceptedReservations.reduce<number>(
       (total: number, reservation: Reservation) => (total += parseFloat(reservation.amount)),
       0
     ) as number
 
-    console.log(totalReceived + ' TOTAL RECEBIDO')
     return totalReceived
   }
 
@@ -23,8 +21,6 @@ export default class TotalReceivedService {
       .select('amount', 'start_time')
       .where('owner_id', ownerId)
       .andWhere('status', 'COMPLETED')
-
-    console.log('OWNER ID ' + ownerId)
 
     const monthlyTotals: MonthlyTotal[] = []
 
@@ -51,8 +47,6 @@ export default class TotalReceivedService {
 
     // Ordena os resultados por mês
     monthlyTotals.sort((a, b) => a.month - b.month)
-
-    console.log(monthlyTotals + ' TOTAL RECEBIDO')
 
     return monthlyTotals
   }

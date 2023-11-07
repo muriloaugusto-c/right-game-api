@@ -41,7 +41,7 @@ export default class OwnersReportsController {
     const user = await auth.authenticate()
     const service = new TotalReceivedService()
 
-    const totalReceived = service.calculateTotalReceived(user.id)
+    const totalReceived = await service.calculateTotalReceived(user.id)
     return response.ok({ totalReceived })
   }
 
@@ -49,7 +49,7 @@ export default class OwnersReportsController {
     const user = await auth.authenticate()
     const service = new TotalReceivedService()
 
-    const totalReceivedByMonth = service.calculateTotalReceivedByMonth(user.id)
+    const totalReceivedByMonth = await service.calculateTotalReceivedByMonth(user.id)
     return response.ok({ totalReceivedByMonth })
   }
 }
