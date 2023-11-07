@@ -1,4 +1,5 @@
-import { schema, CustomMessages } from '@ioc:Adonis/Core/Validator'
+import { CustomMessages, schema } from '@ioc:Adonis/Core/Validator'
+
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 export default class CreateSportsCourtValidator {
@@ -28,7 +29,6 @@ export default class CreateSportsCourtValidator {
     modality: schema.string(),
     description: schema.string(),
     size: schema.string.optional(),
-    photoUrls: schema.string.optional(),
     amount: schema.string(),
   })
 
@@ -48,7 +48,6 @@ export default class CreateSportsCourtValidator {
     'modality.required': 'PhotoUrls is required',
     'description.required': 'Events is required',
     'size.required': 'Contact Number is required',
-    'photoUrls.required': 'Parking is required',
     'amount.required': 'Amount is required',
   }
 }

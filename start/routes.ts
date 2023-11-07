@@ -89,9 +89,18 @@ Route.get(
   '/users/reports/reservation-history',
   'UsersReportsController.reservationHistory'
 ).middleware('auth')
-Route.get('/users/reports/calculateTotalSpent', 'UsersReportsController.totalSpent').middleware(
+Route.get('/users/reports/courtUsageStats', 'UsersReportsController.courtUsageStats').middleware(
   'auth'
 )
+Route.get(
+  '/users/reports/courtUsageStatsByMonth',
+  'UsersReportsController.courtUsageStatsByMonth'
+).middleware('auth')
+Route.get('/users/reports/totalSpent', 'UsersReportsController.totalSpent').middleware('auth')
+Route.get(
+  '/users/reports/totalSpentByMonth',
+  'UsersReportsController.totalSpentByMonth'
+).middleware('auth')
 
 //ROTAS SESSIONS
 Route.post('/sessions', 'SessionsController.store')

@@ -1,10 +1,10 @@
+import BadRequestException from 'App/Exceptions/BadRequestException'
 import Reservation from 'App/Models/Reservation'
 import SportsCenter from 'App/Models/SportsCenter'
 import SportsCourt from 'App/Models/SportsCourt'
 import User from 'App/Models/User'
 
 import ReservationTimeService from './ReservationTimeService'
-import BadRequestException from 'App/Exceptions/BadRequestException'
 
 const timeService = new ReservationTimeService()
 

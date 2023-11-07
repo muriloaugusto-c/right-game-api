@@ -6,8 +6,8 @@ export default class extends BaseSchema {
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id').unsigned().primary()
-      table.timestamp('start_time').notNullable()
-      table.timestamp('end_time').notNullable()
+      table.timestamp('start_time', { useTz: true }).notNullable()
+      table.timestamp('end_time', { useTz: true }).notNullable()
       table.decimal('amount', 10, 2).notNullable()
       table
         .enum('status', [

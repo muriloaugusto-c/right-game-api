@@ -30,6 +30,9 @@ export default class ReservationsController {
         .preload('sportsCourt', (query) => {
           query.select('name')
         })
+        .preload('user', (query) => {
+          query.select('name', 'phone_number')
+        })
         .where('owner_id', ownerId)
 
       response.ok({ reservation: reservations })
@@ -40,7 +43,6 @@ export default class ReservationsController {
 
   public async store({ request, response, bouncer, auth }: HttpContextContract) {
     try {
-      await bouncer.authorize('createReservation')
       const user = await auth.authenticate()
 
       const sportsCenterId = request.param('sportsCenterId') as number

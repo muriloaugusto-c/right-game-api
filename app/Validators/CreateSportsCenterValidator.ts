@@ -45,7 +45,6 @@ export default class CreateSportsCenterValidator {
   public messages: CustomMessages = {
     'name.required': 'Name is required',
     'photoUrls.required': 'PhotoUrls is required',
-    'events.required': 'Events is required',
     'contactNumber.required': 'Contact Number is required',
     'parking.required': 'Parking is required',
     'steakhouse.required': 'Steakhouse is required',
