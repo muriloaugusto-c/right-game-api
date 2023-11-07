@@ -103,6 +103,9 @@ Route.get(
 ).middleware('auth')
 
 //ROTAS OWNERS REPORTS
+Route.get('/owners/reports/courtUsageTotal', 'OwnersReportsController.courtUsageTotal').middleware(
+  'auth'
+)
 Route.get(
   '/owners/reports/courtUsageByMonth/:sportsCourtId?',
   'OwnersReportsController.courtUsageByMonth'

@@ -4,6 +4,14 @@ import TotalReceivedService from 'App/Services/OwnerReports/TotalReceivedService
 import UserRentalsService from 'App/Services/OwnerReports/UserRentalsService'
 
 export default class OwnersReportsController {
+  public async courtUsageTotal({ response, auth }: HttpContextContract) {
+    const user = await auth.authenticate()
+    const service = new CourtUsageService()
+
+    const courtUsageTotal = await service.getCourtUsageTotal(user.id)
+    response.ok({ courtUsageTotal })
+  }
+
   public async courtUsageByMonth({ request, response, auth }: HttpContextContract) {
     const sportsCourtId = request.param('sportsCourtId') as number
     const user = await auth.authenticate()

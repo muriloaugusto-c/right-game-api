@@ -3,6 +3,16 @@ import Reservation from 'App/Models/Reservation'
 type MonthTotal = { month: number; completedReservations: number }
 
 export default class CourtUsageService {
+  public async getCourtUsageTotal(owner_id: number): Promise<number> {
+    const reservations = await Reservation.query()
+      .where('owner_id', owner_id)
+      .andWhere('status', 'COMPLETED')
+
+    const count = reservations.length
+
+    return count
+  }
+
   public async getCourtUsageByMonth(ownerId: number): Promise<MonthTotal[]> {
     const completedReservations = await Reservation.query()
       .select('reservations.*')
