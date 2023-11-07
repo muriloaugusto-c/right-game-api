@@ -34,6 +34,7 @@ export default class ReservationsController {
           query.select('name', 'phone_number')
         })
         .where('owner_id', ownerId)
+        .where('status', 'PENDING')
 
       response.ok({ reservation: reservations })
     } catch (error) {

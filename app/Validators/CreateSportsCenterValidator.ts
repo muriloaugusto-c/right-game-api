@@ -25,7 +25,6 @@ export default class CreateSportsCenterValidator {
    */
   public schema = schema.create({
     name: schema.string(),
-    photoUrls: schema.string(),
     contactNumber: schema.string(),
     parking: schema.boolean(),
     steakhouse: schema.boolean(),
@@ -44,7 +43,6 @@ export default class CreateSportsCenterValidator {
    */
   public messages: CustomMessages = {
     'name.required': 'Name is required',
-    'photoUrls.required': 'PhotoUrls is required',
     'contactNumber.required': 'Contact Number is required',
     'parking.required': 'Parking is required',
     'steakhouse.required': 'Steakhouse is required',

@@ -39,6 +39,7 @@ export default class SportsCentersController {
 
       const sportsCenterPayload = await request.validate(CreateSportsCenterValidator)
       const addressPayload = await request.validate(CreateAddressValidator)
+      const image = request.file('image')
 
       const { sportsCenter, address } = await service.createSportsCenter(
         sportsCenterPayload,

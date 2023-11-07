@@ -32,7 +32,8 @@
       "@adonisjs/lucid",
       "@adonisjs/auth",
       "@adonisjs/bouncer",
-      "adonis5-scheduler"
+      "adonis5-scheduler",
+      "@adonisjs/drive-s3"
     ]
   }
 }
