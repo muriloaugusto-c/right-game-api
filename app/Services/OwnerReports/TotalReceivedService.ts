@@ -5,6 +5,7 @@ type MonthlyTotal = { month: number; totalReceived: number }
 export default class TotalReceivedService {
   public async calculateTotalReceived(ownerId: number): Promise<number> {
     const acceptedReservations = await Reservation.query()
+      .select('reservations.*')
       .where('owner_id', ownerId)
       .andWhere('status', 'COMPLETED')
 
@@ -18,7 +19,7 @@ export default class TotalReceivedService {
 
   public async calculateTotalReceivedByMonth(ownerId: number): Promise<MonthlyTotal[]> {
     const acceptedReservations = await Reservation.query()
-      .select('amount', 'start_time')
+      .select('reservations.*')
       .where('owner_id', ownerId)
       .andWhere('status', 'COMPLETED')
 
