@@ -35,12 +35,13 @@ export default class SportsCourtsController {
     try {
       const user = await auth.authenticate()
       const sportsCenterId = request.param('sportsCenterId') as number
+      const image = request.file('image')
       const sportsCenter = await SportsCenter.findOrFail(sportsCenterId)
 
       await bouncer.authorize('manageSportsCenter', sportsCenter)
       const sportsCourtPayload = await request.validate(CreateSportsCourtValidator)
 
-      const sportsCourt = await service.createSportsCourts(sportsCenter, sportsCourtPayload)
+      const sportsCourt = await service.createSportsCourts(sportsCenter, sportsCourtPayload, image)
 
       await this.auditLog(
         'CREATE SPORTSCOURT',

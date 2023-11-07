@@ -44,7 +44,8 @@ export default class SportsCentersController {
       const { sportsCenter, address } = await service.createSportsCenter(
         sportsCenterPayload,
         addressPayload,
-        user
+        user,
+        image
       )
 
       await this.auditLog(

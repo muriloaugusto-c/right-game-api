@@ -1,15 +1,21 @@
 import SportsCenter from 'App/Models/SportsCenter'
 import SportsCourt from 'App/Models/SportsCourt'
 import DuplicateNameService from './DuplicateNameService'
+import ImagesService from '../Images/ImagesService'
 
 const serviceNameDuplicate = new DuplicateNameService()
+const uploadImage = new ImagesService()
 
 export default class CrudSportsCourtsService {
   public async createSportsCourts(
     sportsCenter: SportsCenter,
-    sportsCourtPayload
+    sportsCourtPayload,
+    image
   ): Promise<SportsCourt> {
     await serviceNameDuplicate.nameDuplicate(sportsCourtPayload.name, sportsCenter.id)
+
+    const photoUrl = await uploadImage.uploadImage(image)
+    sportsCourtPayload.photoUrls = photoUrl
 
     const sportsCourt = await sportsCenter.related('sportsCourt').create(sportsCourtPayload)
 

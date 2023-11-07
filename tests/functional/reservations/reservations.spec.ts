@@ -144,29 +144,4 @@ test.group('Reservations', (group) => {
     response.assertStatus(200)
     assert.notExists(response.body().reservation, 'Reservation defined')
   })
-
-  test('it should return something', async ({ assert, client }) => {
-    const user = await UserFactory.merge({ type: 'OWNER' }).with('address', 1).create()
-    const sportsCenter = await SportsCenterFactory.merge({ ownerId: user.id })
-      .with('address', 1)
-      .create()
-    const sportsCourt = await SportsCourtFactory.merge({ sportsCenterId: sportsCenter.id }).create()
-    await sportsCourt.related('sportsCenter').associate(sportsCenter)
-    const user2 = await UserFactory.with('address', 1).create()
-
-    const reservationPayload = {
-      startTime: '2023-12-17 18:00:00',
-      endTime: '2023-12-17 19:00:00',
-      amount: '1510',
-    }
-
-    await client
-      .post(`/sportsCenters/${sportsCenter.id}/sportsCourts/${sportsCourt.id}/reservations`)
-      .json(reservationPayload)
-      .loginAs(user2)
-
-    const response = await client.get(`/reservations/${user.id}`).json({}).loginAs(user)
-
-    console.log(response.body())
-  }).pin()
 })

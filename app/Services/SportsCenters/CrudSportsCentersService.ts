@@ -3,18 +3,25 @@ import SportsCenter from 'App/Models/SportsCenter'
 import User from 'App/Models/User'
 
 import DuplicateNameService from './DuplicateNameService'
+import ImagesService from '../Images/ImagesService'
+
+const uploadImage = new ImagesService()
 
 export default class CrudSportsCentersService {
   public async createSportsCenter(
     sportsCenterPayload,
     addressPayload,
-    user: User
+    user: User,
+    image
   ): Promise<{ sportsCenter: SportsCenter; address: Address }> {
     const serviceNameDuplicate = new DuplicateNameService()
     await serviceNameDuplicate.nameDuplicate(sportsCenterPayload.name)
 
+    const photoUrl = await uploadImage.uploadImage(image)
+    sportsCenterPayload.photoUrls = photoUrl
+
     const sportsCenter = await SportsCenter.create(sportsCenterPayload)
-    await sportsCenter.merge({ ownerId: user.id }).save()
+    await sportsCenter.related('owner').associate(user)
 
     const address = await sportsCenter.related('address').create(addressPayload)
     await sportsCenter.related('inventory').create({})
