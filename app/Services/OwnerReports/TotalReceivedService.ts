@@ -5,29 +5,28 @@ type MonthlyTotal = { month: number; totalReceived: number }
 export default class TotalReceivedService {
   public async calculateTotalReceived(ownerId: number): Promise<number> {
     const acceptedReservations = await Reservation.query()
-      .select('reservations.*')
       .where('owner_id', ownerId)
       .andWhere('status', 'COMPLETED')
+    console.log('OWNER ID ' + ownerId)
 
-    console.log(acceptedReservations)
-
-    const totalSpent = acceptedReservations.reduce<number>(
+    const totalReceived = acceptedReservations.reduce<number>(
       (total: number, reservation: Reservation) => (total += parseFloat(reservation.amount)),
       0
     ) as number
 
-    return totalSpent
+    console.log(totalReceived + ' TOTAL RECEBIDO')
+    return totalReceived
   }
 
   public async calculateTotalReceivedByMonth(ownerId: number): Promise<MonthlyTotal[]> {
     const acceptedReservations = await Reservation.query()
-      .select('reservations.*')
+      .select('amount', 'start_time')
       .where('owner_id', ownerId)
       .andWhere('status', 'COMPLETED')
 
-    const monthlyTotals: MonthlyTotal[] = []
+    console.log('OWNER ID ' + ownerId)
 
-    console.log(acceptedReservations)
+    const monthlyTotals: MonthlyTotal[] = []
 
     acceptedReservations.forEach((reservation: Reservation) => {
       const startTime = new Date(reservation.startTime.toString())
@@ -52,6 +51,8 @@ export default class TotalReceivedService {
 
     // Ordena os resultados por mês
     monthlyTotals.sort((a, b) => a.month - b.month)
+
+    console.log(monthlyTotals + ' TOTAL RECEBIDO')
 
     return monthlyTotals
   }
