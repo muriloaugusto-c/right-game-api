@@ -151,6 +151,7 @@ test.group('Reservations', (group) => {
       .with('address', 1)
       .create()
     const sportsCourt = await SportsCourtFactory.merge({ sportsCenterId: sportsCenter.id }).create()
+    await sportsCourt.related('sportsCenter').associate(sportsCenter)
     const user2 = await UserFactory.with('address', 1).create()
 
     const reservationPayload = {
