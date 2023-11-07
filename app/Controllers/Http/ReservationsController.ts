@@ -28,7 +28,9 @@ export default class ReservationsController {
 
       const reservations = await Reservation.query()
         .preload('sportsCourt', (query) => {
-          query.preload('sportsCenter')
+          query.preload('sportsCenter', (query) => {
+            query.select('name')
+          })
         })
         .preload('user', (query) => {
           query.select('id', 'name', 'phone_number')
