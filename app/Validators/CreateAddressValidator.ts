@@ -27,7 +27,7 @@ export default class CreateAddressValidator {
   public schema = schema.create({
     street: schema.string.optional(),
     streetNumber: schema.number.optional(),
-    zipCode: schema.number.optional(),
+    zipCode: schema.string.optional(),
     state: schema.string.optional(),
     city: schema.string.optional(),
     neighborhood: schema.string.optional(),

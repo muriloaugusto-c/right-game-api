@@ -27,16 +27,18 @@ export default class ReservationsController {
       )
 
       const reservations = await Reservation.query()
-        .preload('sportsCourt', (query) => {
-          query.select('name').preload('sportsCenter', (query) => {
-            query.select('name')
-          })
-        })
-        .preload('user', (query) => {
-          query.select('name', 'phone_number')
-        })
-        .where('owner_id', ownerId)
-        .where('status', 'PENDING')
+        .leftJoin('sports_courts', 'reservations.sports_court_id', 'sports_courts.id')
+        .leftJoin('sports_centers', 'sports_courts.sports_center_id', 'sports_centers.id')
+        .join('users', 'reservations.user_id', 'users.id')
+        .select(
+          'reservations.*',
+          'sports_courts.name AS courtName',
+          'sports_centers.name AS centerName',
+          'users.name AS userName',
+          'users.phone_number'
+        )
+        .where('reservations.owner_id', ownerId)
+        .where('reservations.status', 'PENDING')
 
       response.ok({ reservation: reservations })
     } catch (error) {
