@@ -35,7 +35,7 @@ export default class CourtUsageService {
     })
 
     // Adiciona os meses faltantes com zero reservas concluídas
-    for (let i = 0; i < 12; i++) {
+    for (let i = 1; i <= 12; i++) {
       const existingTotal = monthTotals.find((total) => total.month === i)
       if (!existingTotal) {
         monthTotals.push({ month: i, completedReservations: 0 })

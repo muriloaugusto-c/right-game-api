@@ -9,6 +9,8 @@ export default class TotalReceivedService {
       .where('owner_id', ownerId)
       .andWhere('status', 'COMPLETED')
 
+    console.log(acceptedReservations)
+
     const totalSpent = acceptedReservations.reduce<number>(
       (total: number, reservation: Reservation) => (total += parseFloat(reservation.amount)),
       0
@@ -24,6 +26,8 @@ export default class TotalReceivedService {
       .andWhere('status', 'COMPLETED')
 
     const monthlyTotals: MonthlyTotal[] = []
+
+    console.log(acceptedReservations)
 
     acceptedReservations.forEach((reservation: Reservation) => {
       const startTime = new Date(reservation.startTime.toString())
