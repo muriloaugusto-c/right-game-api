@@ -1,5 +1,6 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import CourtUsageService from 'App/Services/OwnerReports/CourtUsageService'
+import TotalReceivedService from 'App/Services/OwnerReports/TotalReceivedService'
 import UserRentalsService from 'App/Services/OwnerReports/UserRentalsService'
 
 export default class OwnersReportsController {
@@ -26,5 +27,21 @@ export default class OwnersReportsController {
 
     const userMostRental = await service.getUserWithMostRentals(user.id)
     return response.ok({ userMostRental })
+  }
+
+  public async totalReceived({ response, auth }: HttpContextContract) {
+    const user = await auth.authenticate()
+    const service = new TotalReceivedService()
+
+    const totalReceived = service.calculateTotalReceived(user.id)
+    return response.ok({ totalReceived })
+  }
+
+  public async totalReceivedByMonth({ response, auth }: HttpContextContract) {
+    const user = await auth.authenticate()
+    const service = new TotalReceivedService()
+
+    const totalReceivedByMonth = service.calculateTotalReceivedByMonth(user.id)
+    return response.ok({ totalReceivedByMonth })
   }
 }

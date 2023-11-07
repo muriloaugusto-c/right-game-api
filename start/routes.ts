@@ -110,6 +110,13 @@ Route.get(
 Route.get('/owners/reports/userMostRental', 'OwnersReportsController.userMostRental').middleware(
   'auth'
 )
+Route.get('/owners/reports/totalReceived', 'OwnersReportsController.totalReceived').middleware(
+  'auth'
+)
+Route.get(
+  '/owners/reports/totalReceivedByMonth',
+  'OwnersReportsController.totalReceivedByMonth'
+).middleware('auth')
 
 //ROTAS SESSIONS
 Route.post('/sessions', 'SessionsController.store')
