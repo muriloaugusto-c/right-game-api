@@ -83,7 +83,7 @@ Route.post(
 )
 //Route.put('')
 
-//ROTAS REPORTS
+//ROTAS USERS REPORTS
 
 Route.get(
   '/users/reports/reservation-history',
@@ -101,6 +101,15 @@ Route.get(
   '/users/reports/totalSpentByMonth',
   'UsersReportsController.totalSpentByMonth'
 ).middleware('auth')
+
+//ROTAS OWNERS REPORTS
+Route.get(
+  '/owners/reports/courtUsageByMonth/:sportsCourtId?',
+  'OwnersReportsController.courtUsageByMonth'
+).middleware('auth')
+Route.get('/owners/reports/userMostRental', 'OwnersReportsController.userMostRental').middleware(
+  'auth'
+)
 
 //ROTAS SESSIONS
 Route.post('/sessions', 'SessionsController.store')

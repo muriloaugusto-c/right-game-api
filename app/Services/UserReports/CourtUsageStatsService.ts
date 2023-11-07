@@ -34,6 +34,17 @@ export default class CourtUsageStatsService {
       }
     })
 
+    // Adiciona os meses faltantes com zero reservas concluídas
+    for (let i = 1; i <= 12; i++) {
+      const existingTotal = monthlyTotals.find((total) => total.month === i)
+      if (!existingTotal) {
+        monthlyTotals.push({ month: i, completedReservations: 0 })
+      }
+    }
+
+    // Ordena os resultados por mês
+    monthlyTotals.sort((a, b) => a.month - b.month)
+
     return monthlyTotals
   }
 }
