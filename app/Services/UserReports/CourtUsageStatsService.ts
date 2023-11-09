@@ -27,10 +27,10 @@ export default class CourtUsageStatsService {
     acceptedReservations.forEach((reservation: Reservation) => {
       const startTime = new Date(reservation.startTime.toString())
       const month = startTime.getMonth() + 1
+      console.log(month)
 
-      const monthIndex = month - 1
-      if (monthIndex >= 0 && monthIndex < 12) {
-        monthlyTotals[monthIndex].completedReservations += 1
+      if (month > 0 && month <= 12) {
+        monthlyTotals[month].completedReservations += 1
       }
     })
 
