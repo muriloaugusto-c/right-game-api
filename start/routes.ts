@@ -68,8 +68,8 @@ Route.delete(
 Route.get('/reservations/:ownerId', 'ReservationsController.index').middleware('auth')
 Route.get(
   '/sportsCenters/:sportsCenterId/sportsCourts/:sportsCourtId/reservations',
-  'ReservationsController.index'
-).middleware('auth')
+  'ReservationsController.indexByCourt'
+)
 Route.post(
   '/sportsCenters/:sportsCenterId/sportsCourts/:sportsCourtId/reservations',
   'ReservationsController.store'
