@@ -66,6 +66,10 @@ Route.delete(
 
 //ROTAS RESERVATIONS
 Route.get('/reservations/:ownerId', 'ReservationsController.index').middleware('auth')
+Route.get(
+  '/sportsCenters/:sportsCenterId/sportsCourts/:sportsCourtId/reservations',
+  'ReservationsController.index'
+).middleware('auth')
 Route.post(
   '/sportsCenters/:sportsCenterId/sportsCourts/:sportsCourtId/reservations',
   'ReservationsController.store'

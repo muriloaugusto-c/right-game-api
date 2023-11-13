@@ -44,6 +44,20 @@ export default class ReservationsController {
     }
   }
 
+  public async indexByCourt({ request, response }: HttpContextContract) {
+    try {
+      const sportsCourtId = request.param('sportsCourtId') as number
+
+      const reservations = await Reservation.query()
+        .where('sports_court_id', sportsCourtId)
+        .whereIn('status', ['CONFIRMED', 'IN PROGRESS', 'COMPLETED'])
+
+      response.ok({ reservations })
+    } catch (error) {
+      response.status(error.status).send({ code: error.code, message: error.message })
+    }
+  }
+
   public async store({ request, response, bouncer, auth }: HttpContextContract) {
     try {
       const user = await auth.authenticate()
