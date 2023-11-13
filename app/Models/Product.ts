@@ -20,7 +20,7 @@ export default class Product extends BaseModel {
   public name: string
 
   @column()
-  public value: string
+  public value: number
 
   @column()
   public quantity: number
