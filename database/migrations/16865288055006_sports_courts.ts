@@ -11,7 +11,7 @@ export default class extends BaseSchema {
       table.string('description').notNullable()
       table.string('size')
       table.string('photo_urls')
-      table.string('amount')
+      table.float('amount')
 
       // RELACIONAMENTO ENTRE A TABELA SPORTSCENTER
       table

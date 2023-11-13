@@ -39,7 +39,7 @@ export default class SportsCourt extends BaseModel {
   public sportsCenterId: number
 
   @column()
-  public amount: string
+  public amount: number
 
   @belongsTo(() => SportsCenter, {
     foreignKey: 'sportsCenterId',
