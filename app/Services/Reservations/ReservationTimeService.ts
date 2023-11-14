@@ -28,13 +28,15 @@ export default class ReservationTimeService {
       })
       .first()
 
-    console.log(reservation)
     if (reservation) throw new BadRequestException('Reservation Time is Already in use', 409)
     return true
   }
 
   public async validateDate(startTime: DateTime, endTime: DateTime): Promise<Boolean> {
     const currentTime = DateTime.local()
+    console.log(currentTime.toString())
+    console.log(startTime.toString())
+    console.log(endTime.toString())
 
     if (startTime <= currentTime)
       throw new BadRequestException('Date/time cannot be in the past', 400)
