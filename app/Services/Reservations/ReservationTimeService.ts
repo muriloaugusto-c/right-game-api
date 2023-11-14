@@ -30,13 +30,16 @@ export default class ReservationTimeService {
   }
 
   public async validateDate(startTime: DateTime, endTime: DateTime): Promise<Boolean> {
-    const currentTime = DateTime.local()
+    const currentTimeString = DateTime.local().toISO()
+    if (currentTimeString) {
+      const currentTime = DateTime.fromISO(currentTimeString)
 
-    if (startTime <= currentTime)
-      throw new BadRequestException('Date/time cannot be in the past', 400)
+      if (startTime <= currentTime)
+        throw new BadRequestException('Date/time cannot be in the past', 400)
 
-    if (endTime <= startTime) {
-      throw new BadRequestException('The endTime must be higher than the startTime', 400)
+      if (endTime <= startTime) {
+        throw new BadRequestException('The endTime must be higher than the startTime', 400)
+      }
     }
 
     const differenceInMilliseconds = endTime.diff(startTime).milliseconds

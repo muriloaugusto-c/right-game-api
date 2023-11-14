@@ -22,6 +22,7 @@ export default class UserRentalsService {
         .where('reservations.owner_id', ownerId)
         .where('reservations.user_id', userId)
         .count('reservations.id as userRentalsCount')
+        .sum('reservations.amount as totalAmountSpent') // Adiciona esta linha para calcular o valor total gasto
         .groupBy('users.name', 'users.phone_number')
         .first()
 

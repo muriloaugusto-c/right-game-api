@@ -23,7 +23,7 @@ export default class CourtUsageService {
 
     completedReservations.forEach((reservation: Reservation) => {
       const startTime = new Date(reservation.startTime.toString())
-      const month = startTime.getMonth()
+      const month = startTime.getMonth() + 1
 
       const existingTotal = monthTotals.find((total) => total.month === month)
 

@@ -9,7 +9,7 @@ export default class TotalReceivedService {
       .andWhere('status', 'COMPLETED')
 
     const totalReceived = acceptedReservations.reduce<number>(
-      (total: number, reservation: Reservation) => (total += parseFloat(reservation.amount)),
+      (total: number, reservation: Reservation) => (total += reservation.amount),
       0
     ) as number
 
@@ -31,9 +31,9 @@ export default class TotalReceivedService {
       const existingTotal = monthlyTotals.find((total) => total.month === month)
 
       if (existingTotal) {
-        existingTotal.totalReceived += parseFloat(reservation.amount)
+        existingTotal.totalReceived += reservation.amount
       } else {
-        monthlyTotals.push({ month, totalReceived: parseFloat(reservation.amount) })
+        monthlyTotals.push({ month, totalReceived: reservation.amount })
       }
     })
 
