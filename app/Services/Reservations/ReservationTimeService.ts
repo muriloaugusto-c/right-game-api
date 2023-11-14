@@ -31,7 +31,7 @@ export default class ReservationTimeService {
 
   public async validateDate(startTime: DateTime, endTime: DateTime): Promise<Boolean> {
     const currentTime = DateTime.local().setZone('UTC')
-    console.log('HORA ATUAL: ' + currentTime)
+    console.log('HORA ATUAL: ' + currentTime.get('hour'))
     console.log('JOGO INICIO: ' + startTime)
     console.log('JOGO FIM: ' + endTime)
 
