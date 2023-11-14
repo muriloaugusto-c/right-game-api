@@ -15,7 +15,8 @@ export default class UpdateStatusReservation extends BaseTask {
     const reservations = await Reservation.query().where('status', 'CONFIRMED')
 
     for (const reservation of reservations) {
-      const currentTime = DateTime.local().setZone('UTC')
+      const currentTimeUtc = DateTime.local()
+      const currentTime = currentTimeUtc.minus({ hours: 3 })
       const startTime = reservation.startTime
       const endTime = reservation.endTime
 
