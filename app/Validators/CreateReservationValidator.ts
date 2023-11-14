@@ -27,7 +27,7 @@ export default class CreateReservationValidator {
   public schema = schema.create({
     startTime: schema.date({ format: 'yyyy-MM-dd HH:mm:ss' }),
     endTime: schema.date({ format: 'yyyy-MM-dd HH:mm:ss' }),
-    amount: schema.string(),
+    amount: schema.number(),
   })
 
   /**

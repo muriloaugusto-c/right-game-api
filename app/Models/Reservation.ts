@@ -15,7 +15,7 @@ export default class Reservation extends BaseModel {
   public endTime: DateTime
 
   @column()
-  public amount: string
+  public amount: number
 
   @column()
   public status: 'PENDING' | 'REJECTED' | 'CONFIRMED' | 'IN PROGRESS' | 'COMPLETED' | 'CANCELED'
