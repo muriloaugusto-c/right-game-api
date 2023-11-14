@@ -36,10 +36,6 @@ export default class ReservationTimeService {
     const currentTimeUtc = DateTime.local()
     const currentTime = currentTimeUtc.minus({ hours: 3 })
 
-    console.log(currentTime.toString())
-    console.log(startTime.toString())
-    console.log(endTime.toString())
-
     if (startTime <= currentTime)
       throw new BadRequestException('Date/time cannot be in the past', 400)
 
