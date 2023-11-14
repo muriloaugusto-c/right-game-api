@@ -33,7 +33,9 @@ export default class ReservationTimeService {
   }
 
   public async validateDate(startTime: DateTime, endTime: DateTime): Promise<Boolean> {
-    const currentTime = DateTime.local()
+    const currentTimeUtc = DateTime.local()
+    const currentTime = currentTimeUtc.minus({ hours: 3 })
+
     console.log(currentTime.toString())
     console.log(startTime.toString())
     console.log(endTime.toString())
