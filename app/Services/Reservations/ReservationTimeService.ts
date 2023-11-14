@@ -31,6 +31,9 @@ export default class ReservationTimeService {
 
   public async validateDate(startTime: DateTime, endTime: DateTime): Promise<Boolean> {
     const currentTime = DateTime.local().setZone('UTC')
+    console.log('HORA ATUAL: ' + currentTime)
+    console.log('JOGO INICIO: ' + startTime)
+    console.log('JOGO FIM: ' + endTime)
 
     if (startTime <= currentTime)
       throw new BadRequestException('Date/time cannot be in the past', 400)
