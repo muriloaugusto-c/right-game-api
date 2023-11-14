@@ -15,18 +15,16 @@ export default class UpdateStatusReservation extends BaseTask {
     const reservations = await Reservation.query().where('status', 'CONFIRMED')
 
     for (const reservation of reservations) {
-      const currentTime = DateTime.local().toISO()
-      const startTime = reservation.startTime.toISO()
-      const endTime = reservation.endTime.toISO()
+      const currentTime = DateTime.local().setZone('UTC')
+      const startTime = reservation.startTime
+      const endTime = reservation.endTime
 
-      if (reservation.startTime && reservation.endTime && currentTime && startTime && endTime) {
-        if (currentTime >= startTime && currentTime < endTime) {
-          reservation.status = 'IN PROGRESS'
-          await reservation.save()
-        } else if (currentTime >= endTime) {
-          reservation.status = 'COMPLETED'
-          await reservation.save()
-        }
+      if (currentTime >= startTime && currentTime < endTime) {
+        reservation.status = 'IN PROGRESS'
+        await reservation.save()
+      } else if (currentTime >= endTime) {
+        reservation.status = 'COMPLETED'
+        await reservation.save()
       }
     }
   }

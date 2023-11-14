@@ -7,7 +7,7 @@ export default class UserRentalsService {
       .select('user_id')
       .count('user_id as rentalsCount')
       .where('status', 'COMPLETED')
-      .where('owner_id', ownerId)
+      .andWhere('owner_id', ownerId)
       .groupBy('user_id')
       .orderBy('rentalsCount', 'desc')
       .first()
@@ -20,9 +20,10 @@ export default class UserRentalsService {
         .join('users', 'reservations.user_id', 'users.id')
         .select('users.name', 'users.phone_number')
         .where('reservations.owner_id', ownerId)
-        .where('reservations.user_id', userId)
+        .andWhere('reservations.user_id', userId)
+        .andWhere('reservations.status', 'COMPLETED') // Adicionando filtro por status
         .count('reservations.id as userRentalsCount')
-        .sum('reservations.amount as totalAmountSpent') // Adiciona esta linha para calcular o valor total gasto
+        .sum('reservations.amount as totalAmountSpent')
         .groupBy('users.name', 'users.phone_number')
         .first()
 
